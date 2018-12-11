@@ -3,39 +3,69 @@
  */
 const {hasRequiredTag} = require('./utils');
 const {renderType} = require('./types');
+const {renderParam} = require('./params');
 
-function defaultModuleRenderer ({section, parent, root, log, output}) {
+function isExports (tag) {
+	return tag.title === 'exports';
+}
+
+function exportDeclare (fn) {
+	return `export declare ${fn}`;
+}
+
+function exportDeclarations (moduleName) {
+	return function (tag) {
+		if (tag.description === moduleName) {
+			return `export default ${tag.description}`;	
+		}
+
+		return '';
+	}
+}
+
+function defaultModuleRenderer ({section, parent, root, log, renderer, types}) {
 	if (parent !== root) {
 		log.warn(`Unexpected module ${section.name}`);
 		return;
 	}
 
-	let outputStr =
-`// Type definitions for ${section.name}
+	const moduleName = section.name.replace(/^.*\//g, '');
 
-import * as React from "react";
+	let outputStr = `
+		// Type definitions for ${section.name}
 
-`;
+		${
+			renderer({section: section.members.static})
+				.filter(Boolean)
+				.map(exportDeclare)
+				.join('\n')
+		}
 
-	const statics = section.members.statics;
-	output(outputStr);
+		${
+			section.tags
+				.filter(isExports)
+				.map(exportDeclarations(moduleName))
+				.join('')
+		}
+	`;
+
+	return outputStr;
 }
 
 exports.defaultModuleRenderer = defaultModuleRenderer;
 
-function defaultFunctionRenderer ({section, typeRenderer = renderType, output}) {
-	let outputStr = '',
-		parameters = '',
-		returns = 'void';
+function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
+	let returns = 'void';
 
-	parameters = section.params.map(({type}) => typeRenderer(type));
+	const parameters = section.params.map(({name, type}) => {
+		return `${type.type === 'RestType' ? '...' : ''}${name}: ${typeRenderer(type)}`;
+	});
 
 	if (section.returns.length) {
 		returns = typeRenderer(section.returns[0].type);
 	}
 
-	outputStr += `export function ${section.name}(${parameters.join(', ')}): ${returns};\n\n`
-	output(outputStr);
+	return `function ${section.name}(${parameters.join(', ')}): ${returns};`
 }
 
 exports.defaultFunctionRenderer = defaultFunctionRenderer;
@@ -46,7 +76,7 @@ function defaultConstantRenderer ({section, log}) {
 
 exports.defaultConstantRenderer = defaultConstantRenderer;
 
-function defaultHocRenderer ({section, typeRenderer = renderType, output}) {
+function defaultHocRenderer ({section, typeRenderer = renderType}) {
 	let outputStr = '',
 		configArgument = '',
 		propCoercion = '',
@@ -83,23 +113,60 @@ function defaultHocRenderer ({section, typeRenderer = renderType, output}) {
 	}
 
 	outputStr += `export function ${section.name}${propCoercion}(${configArgument}Component: React.ComponentType<P>): React.Component${classPropCoercion};\n\n`
-	output(outputStr);
+
+	return outputStr;
 }
 
 exports.defaultHocRenderer = defaultHocRenderer;
 
-function defaultClassRenderer ({section, output}) {
-	let propDefn = '';
-	output(`export ${propDefn}declare class ${section.name} extends React.Component<${section.name}Props, any> {};\n\n`);
+function defaultClassRenderer ({section, renderer}) {
+	return `export declare class ${section.name} {
+		${section.constructorComment ? (
+			`constructor(${section.constructorComment.params.map(prop => renderParam(prop, renderType)).join(', ')});`
+		) : ''}
+		${
+			renderer({section: section.members.instance})
+				.map(fn => fn.replace(/^function /, ''))
+				.join('\n')
+		}
+	};\n`;
 }
 
 exports.defaultClassRenderer = defaultClassRenderer;
 
+function defaultTypedefRenderer ({section}) {
+	let outputStr;
+
+	if (section.type.name === 'Object') {
+		outputStr = `interface ${section.name} {
+			${section.properties.map(prop => renderParam(prop, renderType)).join(',')}
+		}`;
+	}
+	else if (section.type.name === 'Function') {
+		const params = section.params.map(prop => renderParam(prop, renderType)).join(', ');
+		const ret = section.returns.length === 0 ? 'void' : renderType(section.returns[0]);
+		outputStr = `interface ${section.name} { (${params}): ${ret}; }`;
+	}
+
+	return outputStr;
+}
+
+exports.defaultTypedefRenderer = defaultTypedefRenderer;
+
+function defaultMemberRenderer ({section}) {
+	return `var ${section.name}: ${renderType(section.type)};\n`;
+}
+
+exports.defaultMemberRenderer = defaultMemberRenderer;
+
 const defaultRenderers = {
+	'class': defaultClassRenderer,
 	'module': defaultModuleRenderer,
 	'function': defaultFunctionRenderer,
 	'constant': defaultConstantRenderer,
-	'hoc': defaultHocRenderer
+	'hoc': defaultHocRenderer,
+	'typedef': defaultTypedefRenderer,
+	'member': defaultMemberRenderer
 };
 
 function getDefaultRenderers (overrides = {}) {

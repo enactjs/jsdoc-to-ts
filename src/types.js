@@ -10,6 +10,7 @@
  */
 const typeMappings = {
 	Boolean: 'boolean',
+	Number: 'number',
 	String: 'string',
 	Object: 'object',
 	RecordType: 'object'
@@ -21,16 +22,38 @@ const typeMappings = {
  * @returns {String} The type definition
  */
 function renderNameExpression(type) {
-	if (!typeMappings[type.name]) {
-		return 'any';
-	}
-	return typeMappings[type.name];
+	return typeMappings[type.name] || type.name;
 }
+
+function renderTypeApplication(type) {
+	if (type.expression.type === 'NameExpression') {
+		switch (type.expression.name) {
+			case 'Object':
+				return `{[key: ${renderType(type.applications[0])}]: ${renderType(type.applications[1])}}`;
+			case 'Array':
+				return `${renderType(type.applications[0])}[]`;
+		}
+	}
+
+	return 'any';
+}
+
+function renderUnionType(type) {
+	return type.elements.map(el => renderType(el)).join(' | ');
+}
+
+function renderRestType(type) {
+	return `${renderType(type.expression)}[]`;
+}
+
 /**
  * Render various type strings
  */
 const typeRenderers = {
-	NameExpression: renderNameExpression
+	NameExpression: renderNameExpression,
+	RestType: renderRestType,
+	TypeApplication: renderTypeApplication,
+	UnionType: renderUnionType
 };
 function renderType(type) {
 	if (!typeRenderers[type.type]) {

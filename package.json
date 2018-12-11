@@ -15,7 +15,8 @@
   "dependencies": {
     "documentation": "^8.1.2",
     "jsonata": "^1.5.4",
-    "loglevel": "^1.6.1"
+    "loglevel": "^1.6.1",
+    "prettier": "^1.15.3"
   },
   "devDependencies": {
     "chai": "^4.2.0",

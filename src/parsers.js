@@ -23,14 +23,26 @@ function makeParser (
 			typeRenderers = getDefaultRenderers()
 		} = {}
 ) {
-	return function parser ({section, root, log, ...rest}) {
-		section.filter(typeFilter).forEach(item => {
+	return function parser ({section, root, log, typedefs = [], ...rest}) {
+		if (!Array.isArray(section)) return [];
+
+		return section.filter(typeFilter).map(item => {
 			const type = typeClassifier({section: item, parent: section, root, ...rest});
 			if (!type || !typeRenderers[type]) {
 				log.info(`Skipping unrecognized item ${item.name}`)
 				return;
 			}
-			typeRenderers[type]({section: item, parent: section, root, ...rest});
+
+			return typeRenderers[type]({
+				...rest,
+				parent: section,
+				root,
+				renderer: (args) => {
+					return parser({section, typedefs, ...rest, ...args, log, root});
+				},
+				section: item,
+				typedefs
+			});
 		});
 	};
 }
