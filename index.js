@@ -20,7 +20,7 @@ function excludeModules (filePath) {
 	return filePath.indexOf('node_modules') === -1 && filePath.indexOf('internal') === -1;
 }
 
-function parse ({path: modulePath, files, output}) {
+function parse ({path: modulePath, files, format, output, outputPath}) {
 	const encodeModule = makeParser();
 
 	if (!files || files.length === 0) {
@@ -31,8 +31,13 @@ function parse ({path: modulePath, files, output}) {
 	log.info(`Parsing ${modulePath} ...`);
 	documentation.build(files, {shallow: true}).then(
 		(root) => {
-			const result = encodeModule({root, section: root, parent: root, log});
-			fs.writeFileSync(output, prettier.format(result.join('\n'), {parser: 'typescript'}));
+			let result = encodeModule({root, section: root, parent: root, log}).join('\n');
+
+			if (format) {
+				result = prettier.format(result, {parser: 'typescript'});
+			}
+
+			output(outputPath, result);
 		}
 	).catch((err) => {
 		log.error(`Unable to process ${modulePath}: ${err}`);
@@ -55,18 +60,22 @@ function getSourceFiles (base) {
 		});
 }
 
-function main ({package, logLevel = 'error'}) {
+function main ({package: base, logLevel = 'error', format, output}) {
 	log.setLevel(logLevel);
 
-	getSourceFiles(package).forEach(module => {
+	getSourceFiles(base).forEach(moduleEntry => {
 		parse({
-			...module,
-			output: path.join(path.dirname(module.path), path.basename(module.path).replace(sourceExtension, '') + '.d.ts')
+			...moduleEntry,
+			format,
+			output,
+			outputPath: path.join(path.dirname(moduleEntry.path), path.basename(moduleEntry.path).replace(sourceExtension, '') + '.d.ts')
 		});
 	})
 }
 
 main({
 	logLevel: 'info',
-	package: '../enact/packages/spotlight'
+	package: '../enact/packages/spotlight',
+	format: true,
+	output: (p, s) => fs.writeFileSync(p, s)
 });
