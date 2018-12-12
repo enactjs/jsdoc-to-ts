@@ -20,7 +20,7 @@ function excludeModules (filePath) {
 	return filePath.indexOf('node_modules') === -1 && filePath.indexOf('internal') === -1;
 }
 
-function parse ({path: modulePath, files, format, output, outputPath}) {
+function parse ({path: modulePath, files, format, output}) {
 	const encodeModule = makeParser();
 
 	if (!files || files.length === 0) {
@@ -32,12 +32,14 @@ function parse ({path: modulePath, files, format, output, outputPath}) {
 	documentation.build(files, {shallow: true}).then(
 		(root) => {
 			let result = encodeModule({root, section: root, parent: root, log}).join('\n');
+			const firstNamedEntry = root.find(entry => entry.name);
+			let moduleName = firstNamedEntry ? firstNamedEntry.name : '';
 
 			if (format) {
 				result = prettier.format(result, {parser: 'typescript'});
 			}
 
-			output(outputPath, result);
+			output(moduleName, result);
 		}
 	).catch((err) => {
 		log.error(`Unable to process ${modulePath}: ${err}`);
@@ -49,6 +51,7 @@ function getSourceFiles (base) {
 		.map(dirPath => path.join(base, dirPath))
 		.filter(isDirectory)
 		.filter(excludeModules)
+		.filter(p => p.includes('src'))
 		.map(dirPath => {
 			return {
 				path: dirPath,
@@ -60,15 +63,18 @@ function getSourceFiles (base) {
 		});
 }
 
-function main ({package: base, logLevel = 'error', format, output}) {
+function main ({package: base, logLevel = 'error', format, output, outputPath}) {
 	log.setLevel(logLevel);
 
 	getSourceFiles(base).forEach(moduleEntry => {
+		outputPath = outputPath || path.dirname(moduleEntry.path);
 		parse({
 			...moduleEntry,
 			format,
-			output,
-			outputPath: path.join(path.dirname(moduleEntry.path), path.basename(moduleEntry.path).replace(sourceExtension, '') + '.d.ts')
+			output: (moduleName, result) => {
+				const file = `${moduleName || path.basename(moduleEntry.path).replace(sourceExtension, '')}.d.ts`;
+				output(path.join(outputPath, file), result);
+			}
 		});
 	})
 }
