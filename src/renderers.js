@@ -31,9 +31,7 @@ function defaultModuleRenderer ({section, parent, root, log, renderer, types}) {
 
 	const moduleName = section.name.replace(/^.*\//g, '');
 
-	let outputStr = `
-		// Type definitions for ${section.name}
-
+	const body = `
 		${
 			renderer({section: section.members.static})
 				.filter(Boolean)
@@ -49,7 +47,13 @@ function defaultModuleRenderer ({section, parent, root, log, renderer, types}) {
 		}
 	`;
 
-	return outputStr;
+	const header = `
+		// Type definitions for ${section.name}
+
+		${body.includes('React.') ? 'import * as React from "react";' : ''}
+	`;
+
+	return `${header}${body}`;
 }
 
 exports.defaultModuleRenderer = defaultModuleRenderer;
@@ -82,8 +86,20 @@ function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
 
 exports.defaultFunctionRenderer = defaultFunctionRenderer;
 
-function defaultConstantRenderer ({section}) {
-	console.log('Constant', section.name);
+function defaultConstantRenderer ({section, renderer}) {
+	const declaration = `var ${section.name}:`;
+	if (section.members.static.length === 0) {
+		return `${declaration} ${renderType(section.type)};`;
+	}
+
+	return `${declaration} {
+		${
+			renderer({section: section.members.static})
+				.filter(Boolean)
+				.map(fn => fn.replace(/^function /, ''))
+				.join('\n')
+		}
+	};`;
 }
 
 exports.defaultConstantRenderer = defaultConstantRenderer;
@@ -138,6 +154,7 @@ function defaultClassRenderer ({section, renderer}) {
 		) : ''}
 		${
 			renderer({section: section.members.instance})
+				.filter(Boolean)
 				.map(fn => fn.replace(/^function /, ''))
 				.join('\n')
 		}
@@ -165,23 +182,6 @@ function defaultTypedefRenderer ({section}) {
 
 exports.defaultTypedefRenderer = defaultTypedefRenderer;
 
-function defaultMemberRenderer ({renderer, section}) {
-	const declaration = `var ${section.name}:`;
-	if (section.members.static.length === 0) {
-		return `${declaration} ${renderType(section.type)};`;
-	}
-
-	return `${declaration} {
-		${
-			renderer({section: section.members.static})
-				.map(fn => fn.replace(/^function /, ''))
-				.join('\n')
-		}
-	};`;
-}
-
-exports.defaultMemberRenderer = defaultMemberRenderer;
-
 const defaultRenderers = {
 	'class': defaultClassRenderer,
 	'module': defaultModuleRenderer,
@@ -189,7 +189,7 @@ const defaultRenderers = {
 	'constant': defaultConstantRenderer,
 	'hoc': defaultHocRenderer,
 	'typedef': defaultTypedefRenderer,
-	'member': defaultMemberRenderer
+	'member': defaultConstantRenderer
 };
 
 function getDefaultRenderers (overrides = {}) {
