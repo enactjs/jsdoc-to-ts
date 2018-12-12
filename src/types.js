@@ -50,6 +50,10 @@ function renderVoid () {
 	return 'void';
 }
 
+function renderLiteral (type) {
+	return type.value;
+}
+
 /**
  * Render various type strings
  */
@@ -58,7 +62,8 @@ const typeRenderers = {
 	RestType: renderRestType,
 	TypeApplication: renderTypeApplication,
 	UndefinedLiteral: renderVoid,
-	UnionType: renderUnionType
+	UnionType: renderUnionType,
+	BooleanLiteralType: renderLiteral
 };
 function renderType(type) {
 	if (!typeRenderers[type.type]) {

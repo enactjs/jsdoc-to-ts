@@ -62,7 +62,15 @@ function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
 			return 'any';
 		}
 
-		return `${type.type === 'RestType' ? '...' : ''}${name}: ${typeRenderer(type)}`;
+		const rest = type.type === 'RestType' ? '...' : '';
+
+		let optional = '';
+		if (type.type === 'OptionalType') {
+			optional = '?';
+			type = type.expression;
+		}
+
+		return `${rest}${name}${optional}: ${typeRenderer(type)}`;
 	});
 
 	if (section.returns.length) {

@@ -51,7 +51,6 @@ function getSourceFiles (base) {
 		.map(dirPath => path.join(base, dirPath))
 		.filter(isDirectory)
 		.filter(excludeModules)
-		.filter(p => p.includes('src'))
 		.map(dirPath => {
 			return {
 				path: dirPath,
