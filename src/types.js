@@ -46,6 +46,10 @@ function renderRestType(type) {
 	return `${renderType(type.expression)}[]`;
 }
 
+function renderVoid () {
+	return 'void';
+}
+
 /**
  * Render various type strings
  */
@@ -53,6 +57,7 @@ const typeRenderers = {
 	NameExpression: renderNameExpression,
 	RestType: renderRestType,
 	TypeApplication: renderTypeApplication,
+	UndefinedLiteral: renderVoid,
 	UnionType: renderUnionType
 };
 function renderType(type) {
