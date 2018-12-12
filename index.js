@@ -66,13 +66,21 @@ function main ({package: base, logLevel = 'error', format, output, outputPath}) 
 	log.setLevel(logLevel);
 
 	getSourceFiles(base).forEach(moduleEntry => {
-		outputPath = outputPath || path.dirname(moduleEntry.path);
+		const base = outputPath || moduleEntry.path;
 		parse({
 			...moduleEntry,
 			format,
 			output: (moduleName, result) => {
-				const file = `${moduleName || path.basename(moduleEntry.path).replace(sourceExtension, '')}.d.ts`;
-				output(path.join(outputPath, file), result);
+				let name;
+
+				if (moduleName) {
+					name = moduleName.replace(/.*\//, '');
+				} else {
+					name = path.basename(moduleEntry.path).replace(sourceExtension, '');
+				}
+
+				const file = `${name}.d.ts`;
+				output(path.join(base, file), result);
 			}
 		});
 	})
