@@ -10,7 +10,7 @@ function defaultTypeClassifier ({section}) {
 	const kind = section.kind;
 
 	// Check for HOC
-	if (kind === 'constant' && hasHOCTag(section)) {
+	if (hasHOCTag(section)) {
 		return 'hoc';
 	}
 
