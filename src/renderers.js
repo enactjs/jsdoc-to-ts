@@ -58,6 +58,10 @@ function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
 	let returns = 'void';
 
 	const parameters = section.params.map(({name, type}) => {
+		if (!type) {
+			return 'any';
+		}
+
 		return `${type.type === 'RestType' ? '...' : ''}${name}: ${typeRenderer(type)}`;
 	});
 
@@ -70,8 +74,8 @@ function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
 
 exports.defaultFunctionRenderer = defaultFunctionRenderer;
 
-function defaultConstantRenderer ({section, log}) {
-	log.info(section.name);
+function defaultConstantRenderer ({section}) {
+	console.log('Constant', section.name);
 }
 
 exports.defaultConstantRenderer = defaultConstantRenderer;
@@ -153,8 +157,19 @@ function defaultTypedefRenderer ({section}) {
 
 exports.defaultTypedefRenderer = defaultTypedefRenderer;
 
-function defaultMemberRenderer ({section}) {
-	return `var ${section.name}: ${renderType(section.type)};\n`;
+function defaultMemberRenderer ({renderer, section}) {
+	const declaration = `var ${section.name}:`;
+	if (section.members.static.length === 0) {
+		return `${declaration} ${renderType(section.type)};`;
+	}
+
+	return `${declaration} {
+		${
+			renderer({section: section.members.static})
+				.map(fn => fn.replace(/^function /, ''))
+				.join('\n')
+		}
+	};`;
 }
 
 exports.defaultMemberRenderer = defaultMemberRenderer;
