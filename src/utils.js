@@ -24,3 +24,23 @@ const hasHOCTag = (member) => {
 	return !!result;
 };
 exports.hasHOCTag = hasHOCTag;
+
+/**
+ * Checks member for a 'ui' tag
+ *
+ * @param {Object} member A property definition
+ * @returns {Boolean}
+ */
+const hasComponentTag = (member) => {
+	// Find any tag field whose `title` is 'required' (won't be there if not required)
+	const expression = "$[title='ui']";
+	const result = jsonata(expression).evaluate(member.tags);
+	return !!result;
+};
+exports.hasComponentTag = hasComponentTag;
+
+const escapeClassMember = (member) => {
+	return member.match(/-/) ? `'${member}'` : member;
+};
+
+exports.escapeClassMember = escapeClassMember;

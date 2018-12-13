@@ -4,7 +4,7 @@
  * @module props
  */
 
-const {hasRequiredTag} = require("./utils");
+const {hasRequiredTag, escapeClassMember} = require("./utils");
 const {renderType} = require("./types");
 
 function renderPropDefinitions(cls) {
@@ -15,7 +15,7 @@ function renderPropDefinitions(cls) {
 	let output = `export interface ${cls.name}Props {\n`;
 	output = cls.members.instance.reduce((out, member) => {
 		const required = hasRequiredTag(member) ? '' : '?';
-		return out + `	${member.name}${required}: ${renderType(member.type)};\n`;
+		return out + `	${escapeClassMember(member.name)}${required}: ${renderType(member.type)};\n`;
 	}, output);
 	return output + '}\n\n';
 }

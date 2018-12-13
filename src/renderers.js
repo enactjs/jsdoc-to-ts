@@ -1,7 +1,7 @@
 /**
  * Rendering functions and the default set of renderers
  */
-const {hasRequiredTag} = require('./utils');
+const {escapeClassMember, hasRequiredTag} = require('./utils');
 const {renderType} = require('./types');
 const {renderParam} = require('./params');
 
@@ -135,7 +135,7 @@ function defaultHocRenderer ({section, typeRenderer = renderType}) {
 		outputStr = section.members.instance.reduce((out, member) => {
 			const required = hasRequiredTag(member) ? '' : '?';
 
-			return out + `	${member.name}${required}: ${typeRenderer(member.type)};\n`;
+			return out + `	${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};\n`;
 		}, outputStr);
 		outputStr += '}\n\n';
 	}
@@ -146,6 +146,40 @@ function defaultHocRenderer ({section, typeRenderer = renderType}) {
 }
 
 exports.defaultHocRenderer = defaultHocRenderer;
+
+
+function defaultComponentRenderer ({section, typeRenderer = renderType}) {
+	let outputStr = '',
+		configArgument = '',
+		propCoercion = '',
+		classPropCoercion = '<P>';
+
+	// Export an interface for the hoc props
+	const hasProps = section.members && section.members.instance && section.members.instance.length;
+	if (hasProps) {
+		propCoercion = `<P extends ${section.name}Props>`;
+		classPropCoercion = `<P & ${section.name}Props>`;
+		outputStr += `export interface ${section.name}Props {\n`;
+		outputStr = section.members.instance.reduce((out, member) => {
+			const required = hasRequiredTag(member) ? '' : '?';
+
+			return out + `	${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};\n`;
+		}, outputStr);
+		outputStr += '}\n\n';
+	}
+
+	let ext = `extends React.Component${classPropCoercion}`;
+	if (section.augments && section.augments.length > 0) {
+		// only supports single extends
+		ext = `extends ${section.augments[0].name.replace(/^.*\./, '')}`;
+	}
+
+	outputStr += `export class ${section.name}${propCoercion} ${ext} {};\n\n`
+
+	return outputStr;
+}
+
+exports.defaultComponentRenderer = defaultComponentRenderer;
 
 function defaultClassRenderer ({section, renderer}) {
 	return `export declare class ${section.name} {
@@ -187,6 +221,7 @@ const defaultRenderers = {
 	'module': defaultModuleRenderer,
 	'function': defaultFunctionRenderer,
 	'constant': defaultConstantRenderer,
+	'component': defaultComponentRenderer,
 	'hoc': defaultHocRenderer,
 	'typedef': defaultTypedefRenderer,
 	'member': defaultConstantRenderer
