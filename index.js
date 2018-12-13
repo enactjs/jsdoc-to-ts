@@ -62,7 +62,7 @@ function getSourceFiles (base) {
 		});
 }
 
-function main ({package: base, logLevel = 'error', format, output, outputPath}) {
+function main ({package: base, logLevel = 'error', format = true, output, outputPath}) {
 	log.setLevel(logLevel);
 
 	getSourceFiles(base).forEach(moduleEntry => {
@@ -86,9 +86,10 @@ function main ({package: base, logLevel = 'error', format, output, outputPath}) 
 	})
 }
 
-main({
-	logLevel: 'info',
-	package: '../enact/packages/spotlight',
-	format: true,
-	output: (p, s) => fs.writeFileSync(p, s)
+['core', 'ui', 'moonstone', 'spotlight', 'webos'].forEach(package => {
+	main({
+		logLevel: 'info',
+		package: '../enact/packages/' + package,
+		output: (p, s) => fs.writeFileSync(p, s)
+	});
 });
