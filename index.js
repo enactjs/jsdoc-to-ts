@@ -62,11 +62,15 @@ function getSourceFiles (base) {
 		});
 }
 
-function main ({package: base, logLevel = 'error', format = true, output, outputPath}) {
+function isRequired (name) {
+	throw new Error(`${name} is a required argument`);
+}
+
+function main ({package: base = isRequired('package'), logLevel = 'error', format = true, output = isRequired('output'), outputPath}) {
 	log.setLevel(logLevel);
 
 	getSourceFiles(base).forEach(moduleEntry => {
-		const base = outputPath || moduleEntry.path;
+		const outputBase = outputPath || moduleEntry.path;
 		parse({
 			...moduleEntry,
 			format,
@@ -80,16 +84,18 @@ function main ({package: base, logLevel = 'error', format = true, output, output
 				}
 
 				const file = `${name}.d.ts`;
-				output(path.join(base, file), result);
+				output(path.join(outputBase, file), result);
 			}
 		});
 	})
 }
 
-['core', 'ui', 'moonstone', 'spotlight', 'webos'].forEach(package => {
-	main({
-		logLevel: 'info',
-		package: '../enact/packages/' + package,
-		output: (p, s) => fs.writeFileSync(p, s)
-	});
-});
+module.exports = main;
+
+// ['core', 'i18n', 'moonstone', 'spotlight', 'ui', 'webos'].forEach(pkg => {
+// 	main({
+// 		logLevel: 'info',
+// 		package: '../enact/packages/' + pkg,
+// 		output: (p, s) => fs.writeFileSync(p, s)
+// 	});
+// });
