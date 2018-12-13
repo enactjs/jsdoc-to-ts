@@ -22,7 +22,7 @@ const typeMappings = {
  * @returns {String} The type definition
  */
 function renderNameExpression(type) {
-	return typeMappings[type.name] || type.name;
+	return typeMappings[type.name] || type.name.replace(/^.*[/\.~]/, '');
 }
 
 function renderTypeApplication(type) {
