@@ -135,6 +135,10 @@ function defaultHocRenderer ({section, typeRenderer = renderType}) {
 		outputStr = section.members.instance.reduce((out, member) => {
 			const required = hasRequiredTag(member) ? '' : '?';
 
+			if (member.kind === 'function') {
+				return out + defaultFunctionRenderer({section: member}).replace(/^function /, '') + '\n';
+			}
+
 			return out + `	${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};\n`;
 		}, outputStr);
 		outputStr += '}\n\n';
@@ -162,6 +166,10 @@ function defaultComponentRenderer ({section, typeRenderer = renderType}) {
 		outputStr += `export interface ${section.name}Props {\n`;
 		outputStr = section.members.instance.reduce((out, member) => {
 			const required = hasRequiredTag(member) ? '' : '?';
+
+			if (member.kind === 'function') {
+				return out + defaultFunctionRenderer({section: member}).replace(/^function /, '') + '\n';
+			}
 
 			return out + `	${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};\n`;
 		}, outputStr);
