@@ -10,7 +10,7 @@ function isExports (tag) {
 }
 
 function exportDeclare (fn) {
-	return `export declare ${fn}`;
+	return fn.includes('export') ? fn : `export declare ${fn}`;
 }
 
 function exportDeclarations (moduleName) {
@@ -152,39 +152,38 @@ function defaultHocRenderer ({section, typeRenderer = renderType}) {
 exports.defaultHocRenderer = defaultHocRenderer;
 
 
-function defaultComponentRenderer ({section, typeRenderer = renderType}) {
-	let outputStr = '',
-		configArgument = '',
-		propCoercion = '',
-		classPropCoercion = '<P>';
+function defaultComponentRenderer ({section, renderer, typeRenderer = renderType}) {
+	const props = section.members.instance.filter(member => !member.kind);
+	const funcs = section.members.instance.filter(member => member.kind === 'function');
+	const hasProps = props.length > 0;
+	const propsInterfaceName = `${section.name}Props`;
+	const propsInterface = !hasProps ? '' :
+		`interface ${propsInterfaceName} {
+			${props.map(member => {
+				const required = hasRequiredTag(member) ? '' : '?';
+				return `${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
+			}).join('\n')}
+		}`;
 
-	// Export an interface for the hoc props
-	const hasProps = section.members && section.members.instance && section.members.instance.length;
-	if (hasProps) {
-		propCoercion = `<P extends ${section.name}Props>`;
-		classPropCoercion = `<P & ${section.name}Props>`;
-		outputStr += `export interface ${section.name}Props {\n`;
-		outputStr = section.members.instance.reduce((out, member) => {
-			const required = hasRequiredTag(member) ? '' : '?';
-
-			if (member.kind === 'function') {
-				return out + defaultFunctionRenderer({section: member}).replace(/^function /, '') + '\n';
-			}
-
-			return out + `	${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};\n`;
-		}, outputStr);
-		outputStr += '}\n\n';
-	}
-
-	let ext = `extends React.Component${classPropCoercion}`;
+	let ext = `extends React.Component<${hasProps ? propsInterfaceName : ''}>`;
 	if (section.augments && section.augments.length > 0) {
-		// only supports single extends
-		ext = `extends ${section.augments[0].name.replace(/^.*\./, '')}`;
+		// only supports single extends ... 
+		if (section.augments[0].name.indexOf(section.memberof) === 0) {
+			// ... within the same submodule for now until we can resolve/import externals
+			ext = `extends ${section.augments[0].name.replace(/^.*[~\.]/, '')}`;
+		}
 	}
 
-	outputStr += `export class ${section.name}${propCoercion} ${ext} {};\n\n`
-
-	return outputStr;
+	return `${propsInterface}
+		export class ${section.name} ${ext} {
+			${
+				renderer({section: funcs})
+					.filter(Boolean)
+					.map(fn => fn.replace(/^function /, ''))
+					.join('\n')
+			}
+		}
+	`;
 }
 
 exports.defaultComponentRenderer = defaultComponentRenderer;
