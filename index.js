@@ -16,10 +16,6 @@ function isScript (filePath) {
 	return filePath.match(sourceExtension) != null;
 }
 
-function excludeModules (filePath) {
-	return filePath.indexOf('node_modules') === -1 && filePath.indexOf('internal') === -1;
-}
-
 function parse ({path: modulePath, files, format, output}) {
 	const encodeModule = makeParser();
 
@@ -50,14 +46,12 @@ function getSourceFiles (base) {
 	return fs.readdirSync(base)
 		.map(dirPath => path.join(base, dirPath))
 		.filter(isDirectory)
-		.filter(excludeModules)
 		.map(dirPath => {
 			return {
 				path: dirPath,
 				files: fs.readdirSync(dirPath)
 					.map(p => path.join(dirPath, p))
 					.filter(isScript)
-					.filter(excludeModules)
 			};
 		});
 }
@@ -69,7 +63,7 @@ function isRequired (name) {
 function main ({package: base = isRequired('package'), logLevel = 'error', format = true, output = isRequired('output'), outputPath}) {
 	log.setLevel(logLevel);
 
-	getSourceFiles(base).forEach(moduleEntry => {
+	getSourceFiles(path.resolve(base)).forEach(moduleEntry => {
 		const outputBase = outputPath || moduleEntry.path;
 		parse({
 			...moduleEntry,
@@ -91,11 +85,3 @@ function main ({package: base = isRequired('package'), logLevel = 'error', forma
 }
 
 module.exports = main;
-
-// ['core', 'i18n', 'moonstone', 'spotlight', 'ui', 'webos'].forEach(pkg => {
-// 	main({
-// 		logLevel: 'info',
-// 		package: '../enact/packages/' + pkg,
-// 		output: (p, s) => fs.writeFileSync(p, s)
-// 	});
-// });

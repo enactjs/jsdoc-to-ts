@@ -104,49 +104,40 @@ function defaultConstantRenderer ({section, renderer}) {
 
 exports.defaultConstantRenderer = defaultConstantRenderer;
 
+function renderInterface (name, members, typeRenderer) {
+	return `interface ${name} {
+		${members.map(member => {
+			const required = hasRequiredTag(member) ? '' : '?';
+			return `${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
+		}).join('\n')}
+	}`;
+}
+
 function defaultHocRenderer ({section, typeRenderer = renderType}) {
-	let outputStr = '',
-		configArgument = '',
-		propCoercion = '',
-		classPropCoercion = '<P>';
+	const props = section.members.instance.filter(member => !member.kind);
+	const config = section.members.static.find(member => member.tags.find(tag => tag.title === 'hocconfig'));
+	const hasProps = props && props.length > 0;
+	const hasConfig = config && config.members.static.length > 0;
 
-	// export an interface for the hoc config
-	const hasConfig = section.members && section.members.static && section.members.static.length;
-	if (hasConfig) {
-		const config = section.members.static[0];
+	const propsInterfaceName = `${section.name}Props`;
+	const propsInterface = !hasProps ? '' : renderInterface(propsInterfaceName, props, typeRenderer);
 
-		configArgument = `config: ${section.name}Config, `;
-		// We're ignoring the name set in the docs for a more descriptive name
-		outputStr += `export interface ${section.name}Config {\n`;
-		outputStr = config.members.static.reduce((out, member) => {
-			const required = hasRequiredTag(member) ? '' : '?';
+	const configInterfaceName = `${section.name}Config`;
+	const configInterface = !hasConfig ? '' : renderInterface(configInterfaceName, config.members.static, typeRenderer);
 
-			return out + `	${member.name}${required}: ${typeRenderer(member.type)};\n`;
-		}, outputStr);
-		outputStr += '}\n\n';
-	}
-
-	// Export an interface for the hoc props
-	const hasProps = section.members && section.members.instance && section.members.instance.length;
-	if (hasProps) {
-		propCoercion = `<P extends ${section.name}Props>`;
-		classPropCoercion = `<P & ${section.name}Props>`;
-		outputStr += `export interface ${section.name}Props {\n`;
-		outputStr = section.members.instance.reduce((out, member) => {
-			const required = hasRequiredTag(member) ? '' : '?';
-
-			if (member.kind === 'function') {
-				return out + defaultFunctionRenderer({section: member}).replace(/^function /, '') + '\n';
-			}
-
-			return out + `	${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};\n`;
-		}, outputStr);
-		outputStr += '}\n\n';
-	}
-
-	outputStr += `export function ${section.name}${propCoercion}(${configArgument}Component: React.ComponentType<P>): React.Component${classPropCoercion};\n\n`
-
-	return outputStr;
+	const returnType = `React.ComponentType<P${hasProps ? `& ${propsInterfaceName}` : ''}>`;
+	return `${configInterface}
+		${propsInterface}
+		export function ${section.name}<P>(
+			${hasConfig ? `config: ${configInterfaceName},` : ''}
+			Component: React.ComponentType<P>
+		): ${returnType};
+		${!hasConfig ? '' : `
+			export function ${section.name}<P>(
+				Component: React.ComponentType<P>
+			): ${returnType};
+		`}
+	`;
 }
 
 exports.defaultHocRenderer = defaultHocRenderer;
@@ -157,13 +148,7 @@ function defaultComponentRenderer ({section, renderer, typeRenderer = renderType
 	const funcs = section.members.instance.filter(member => member.kind === 'function');
 	const hasProps = props.length > 0;
 	const propsInterfaceName = `${section.name}Props`;
-	const propsInterface = !hasProps ? '' :
-		`interface ${propsInterfaceName} {
-			${props.map(member => {
-				const required = hasRequiredTag(member) ? '' : '?';
-				return `${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
-			}).join('\n')}
-		}`;
+	const propsInterface = !hasProps ? '' : renderInterface(propsInterfaceName, props, typeRenderer);
 
 	let ext = `extends React.Component<${hasProps ? propsInterfaceName : ''}>`;
 	if (section.augments && section.augments.length > 0) {
