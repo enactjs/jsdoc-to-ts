@@ -64,7 +64,7 @@ function main ({package: base = isRequired('package'), logLevel = 'error', forma
 	log.setLevel(logLevel);
 
 	getSourceFiles(path.resolve(base)).forEach(moduleEntry => {
-		const outputBase = outputPath || moduleEntry.path;
+		const outputBase = outputPath ? path.resolve(path.join(outputPath, path.basename(moduleEntry.path))) : moduleEntry.path;
 		parse({
 			...moduleEntry,
 			format,
