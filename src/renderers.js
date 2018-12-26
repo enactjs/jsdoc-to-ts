@@ -24,17 +24,29 @@ function exportDeclarations (moduleName) {
 	}
 }
 
-function defaultModuleRenderer ({section, parent, root, log, renderer, types}) {
+function defaultModuleRenderer ({section, parent, root, importMap, log, renderer, types}) {
 	if (parent !== root) {
 		log.warn(`Unexpected module ${section.name}`);
 		return;
 	}
 
 	const moduleName = section.name.replace(/^.*\//g, '');
+	const imports = {
+		add: function (entry) {
+			if (this.entries.find(e => (
+				e.module === entry.module &&
+				e.path === entry.path &&
+				e.name === entry.name
+			))) return;
+
+			this.entries.push(entry);
+		},
+		entries: []
+	};
 
 	const body = `
 		${
-			renderer({section: section.members.static})
+			renderer({section: section.members.static, imports})
 				.filter(Boolean)
 				.map(exportDeclare)
 				.join('\n')
@@ -51,7 +63,21 @@ function defaultModuleRenderer ({section, parent, root, log, renderer, types}) {
 	const header = `
 		// Type definitions for ${section.name}
 
-		${body.includes('React.') ? 'import * as React from "react";' : ''}
+		${imports.entries.map(entry => {
+			const path = `${importMap && importMap[entry.module] || entry.module}${entry.path ? `/${entry.path}` : ''}`;
+			let spec = '';
+
+			if (entry.name) {
+				if (entry.all) {
+					spec = `* as ${entry.alias || entry.name}`;
+				} else {
+					const name = entry.alias ? `${entry.name} as ${entry.alias}` : entry.name
+					spec = `{ ${name} }`;
+				}
+			}
+
+			return `import ${spec} from "${path}";`
+		}).join('\n')}
 	`;
 
 	return `${header}${body}`;
@@ -106,11 +132,6 @@ function defaultConstantRenderer ({section, renderer}) {
 exports.defaultConstantRenderer = defaultConstantRenderer;
 
 function renderInterface (name, members, interfaceBase, typeRenderer) {
-	// use a type alias when there are no members
-	if (members.length === 0) {
-		return `export type ${name} = ${interfaceBase}`;
-	}
-
 	return `export interface ${name} ${interfaceBase ? `extends ${interfaceBase}` : ''} {
 		${members.map(member => {
 			const required = hasRequiredTag(member) ? '' : '?';
@@ -119,28 +140,55 @@ function renderInterface (name, members, interfaceBase, typeRenderer) {
 	}`;
 }
 
-function defaultHocRenderer ({section, typeRenderer = renderType}) {
+function calcPropsBaseName ({imports, section}) {
+	return [
+		...section.augments.map(a => a.name),
+		...section.tags.filter(t => t.title === 'mixes').map(t => t.name)
+	].map(name => {
+		if (name.indexOf(section.memberof) === 0) {
+			// if within the same submodule, no import required
+			return name.replace(/^.*[~\.]/, '') + 'Props';
+		}
+
+		const importMatch = name.match(/(\w+?)\/(\w+)\.(\w+)/i);
+		if (importMatch) {
+			const alias = name.replace(/[\/\.]/g, '_') + 'Props';
+			imports.add({
+				module: importMatch[1],
+				path: importMatch[2],
+				name: importMatch[3] + 'Props',
+				alias
+			});
+
+			return alias;
+		}
+
+		return false;
+	}).filter(Boolean).join(', ');
+}
+
+function defaultHocRenderer ({section, imports, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const config = section.members.static.find(member => member.tags.find(tag => tag.title === 'hocconfig'));
-	const hasProps = props && props.length > 0;
 	const hasConfig = config && config.members.static.length > 0;
 
+	const propsBase = calcPropsBaseName({imports, section});
 	const propsInterfaceName = `${section.name}Props`;
-	const propsInterface = !hasProps ? '' : renderInterface(propsInterfaceName, props, 'Object', typeRenderer);
+	const propsInterface = renderInterface(propsInterfaceName, props, propsBase, typeRenderer);
 
 	const configInterfaceName = `${section.name}Config`;
 	const configInterface = !hasConfig ? '' : renderInterface(configInterfaceName, config.members.static, 'Object', typeRenderer);
 
-	const returnType = `React.ComponentType<P${hasProps ? `& ${propsInterfaceName}` : ''}>`;
+	const returnType = `React.ComponentType<P & ${propsInterfaceName}>`;
 	return `${configInterface}
 		${propsInterface}
 		export function ${section.name}<P>(
 			${hasConfig ? `config: ${configInterfaceName},` : ''}
-			Component: React.ComponentType<P>
+			Component: React.ComponentType<P> | string
 		): ${returnType};
 		${!hasConfig ? '' : `
 			export function ${section.name}<P>(
-				Component: React.ComponentType<P>
+				Component: React.ComponentType<P> | string
 			): ${returnType};
 		`}
 	`;
@@ -148,22 +196,19 @@ function defaultHocRenderer ({section, typeRenderer = renderType}) {
 
 exports.defaultHocRenderer = defaultHocRenderer;
 
-
-function defaultComponentRenderer ({section, renderer, typeRenderer = renderType}) {
+function defaultComponentRenderer ({section, renderer, imports, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const funcs = section.members.instance.filter(member => member.kind === 'function');
 
-	let propsBase = null;
-	if (section.augments && section.augments.length > 0) {
-		// only supports single extends ... 
-		if (section.augments[0].name.indexOf(section.memberof) === 0) {
-			// ... within the same submodule for now until we can resolve/import externals
-			propsBase = section.augments[0].name.replace(/^.*[~\.]/, '') + 'Props';
-		}
-	}
-
+	const propsBase = calcPropsBaseName({imports, section});
 	const propsInterfaceName = `${section.name}Props`;
-	const propsInterface = renderInterface(propsInterfaceName, props, propsBase || 'Object', typeRenderer);
+	const propsInterface = renderInterface(propsInterfaceName, props, propsBase, typeRenderer);
+
+	imports.add({
+		module: 'react',
+		name: 'React',
+		all: true
+	});
 
 	return `${propsInterface}
 		export class ${section.name} extends React.Component<${propsInterfaceName}> {

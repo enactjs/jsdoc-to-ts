@@ -16,7 +16,7 @@ function isScript (filePath) {
 	return filePath.match(sourceExtension) != null;
 }
 
-function parse ({path: modulePath, files, format, output}) {
+function parse ({path: modulePath, files, format, importMap, output}) {
 	const encodeModule = makeParser();
 
 	if (!files || files.length === 0) {
@@ -27,7 +27,7 @@ function parse ({path: modulePath, files, format, output}) {
 	log.info(`Parsing ${modulePath} ...`);
 	documentation.build(files, {shallow: true}).then(
 		(root) => {
-			let result = encodeModule({root, section: root, parent: root, log}).join('\n');
+			let result = encodeModule({root, section: root, parent: root, importMap, log}).join('\n');
 			const firstNamedEntry = root.find(entry => entry.name);
 			let moduleName = firstNamedEntry ? firstNamedEntry.name : '';
 
@@ -60,7 +60,7 @@ function isRequired (name) {
 	throw new Error(`${name} is a required argument`);
 }
 
-function main ({package: base = isRequired('package'), logLevel = 'error', format = true, output = isRequired('output'), outputPath}) {
+function main ({package: base = isRequired('package'), logLevel = 'error', format = true, importMap, output = isRequired('output'), outputPath}) {
 	log.setLevel(logLevel);
 
 	getSourceFiles(path.resolve(base)).forEach(moduleEntry => {
@@ -68,6 +68,7 @@ function main ({package: base = isRequired('package'), logLevel = 'error', forma
 		parse({
 			...moduleEntry,
 			format,
+			importMap,
 			output: (moduleName, result) => {
 				let name;
 
