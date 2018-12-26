@@ -1,3 +1,4 @@
+
 /**
  * Rendering functions and the default set of renderers
  */
@@ -104,8 +105,13 @@ function defaultConstantRenderer ({section, renderer}) {
 
 exports.defaultConstantRenderer = defaultConstantRenderer;
 
-function renderInterface (name, members, typeRenderer) {
-	return `interface ${name} {
+function renderInterface (name, members, interfaceBase, typeRenderer) {
+	// use a type alias when there are no members
+	if (members.length === 0) {
+		return `export type ${name} = ${interfaceBase}`;
+	}
+
+	return `export interface ${name} ${interfaceBase ? `extends ${interfaceBase}` : ''} {
 		${members.map(member => {
 			const required = hasRequiredTag(member) ? '' : '?';
 			return `${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
@@ -120,10 +126,10 @@ function defaultHocRenderer ({section, typeRenderer = renderType}) {
 	const hasConfig = config && config.members.static.length > 0;
 
 	const propsInterfaceName = `${section.name}Props`;
-	const propsInterface = !hasProps ? '' : renderInterface(propsInterfaceName, props, typeRenderer);
+	const propsInterface = !hasProps ? '' : renderInterface(propsInterfaceName, props, 'Object', typeRenderer);
 
 	const configInterfaceName = `${section.name}Config`;
-	const configInterface = !hasConfig ? '' : renderInterface(configInterfaceName, config.members.static, typeRenderer);
+	const configInterface = !hasConfig ? '' : renderInterface(configInterfaceName, config.members.static, 'Object', typeRenderer);
 
 	const returnType = `React.ComponentType<P${hasProps ? `& ${propsInterfaceName}` : ''}>`;
 	return `${configInterface}
@@ -146,21 +152,21 @@ exports.defaultHocRenderer = defaultHocRenderer;
 function defaultComponentRenderer ({section, renderer, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const funcs = section.members.instance.filter(member => member.kind === 'function');
-	const hasProps = props.length > 0;
-	const propsInterfaceName = `${section.name}Props`;
-	const propsInterface = !hasProps ? '' : renderInterface(propsInterfaceName, props, typeRenderer);
 
-	let ext = `extends React.Component<${hasProps ? propsInterfaceName : ''}>`;
+	let propsBase = null;
 	if (section.augments && section.augments.length > 0) {
 		// only supports single extends ... 
 		if (section.augments[0].name.indexOf(section.memberof) === 0) {
 			// ... within the same submodule for now until we can resolve/import externals
-			ext = `extends ${section.augments[0].name.replace(/^.*[~\.]/, '')}`;
+			propsBase = section.augments[0].name.replace(/^.*[~\.]/, '') + 'Props';
 		}
 	}
 
+	const propsInterfaceName = `${section.name}Props`;
+	const propsInterface = renderInterface(propsInterfaceName, props, propsBase || 'Object', typeRenderer);
+
 	return `${propsInterface}
-		export class ${section.name} ${ext} {
+		export class ${section.name} extends React.Component<${propsInterfaceName}> {
 			${
 				renderer({section: funcs})
 					.filter(Boolean)

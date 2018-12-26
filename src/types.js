@@ -9,6 +9,7 @@
  * A mapping of jsdoc type fields to TypeScript types
  */
 const typeMappings = {
+	Component: 'React.ComponentType',
 	Boolean: 'boolean',
 	Number: 'number',
 	String: 'string',
