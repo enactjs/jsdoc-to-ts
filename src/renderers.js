@@ -3,7 +3,7 @@
  * Rendering functions and the default set of renderers
  */
 const {escapeClassMember, hasRequiredTag} = require('./utils');
-const {renderType} = require('./types');
+const {renderType, extractTypeImports} = require('./types');
 const {renderParam} = require('./params');
 
 function isExports (tag) {
@@ -17,11 +17,11 @@ function exportDeclare (fn) {
 function exportDeclarations (moduleName) {
 	return function (tag) {
 		if (tag.description === moduleName) {
-			return `export default ${tag.description}`;	
+			return `export default ${tag.description}`;
 		}
 
 		return '';
-	}
+	};
 }
 
 function defaultModuleRenderer ({section, parent, root, importMap, log, renderer, types}) {
@@ -131,10 +131,11 @@ function defaultConstantRenderer ({section, renderer}) {
 
 exports.defaultConstantRenderer = defaultConstantRenderer;
 
-function renderInterface (name, members, interfaceBase, typeRenderer) {
+function renderInterface (name, members, interfaceBase, typeRenderer, imports) {
 	return `export interface ${name} ${interfaceBase ? `extends ${interfaceBase}` : ''} {
 		${members.map(member => {
 			const required = hasRequiredTag(member) ? '' : '?';
+			extractTypeImports(member.type, imports);
 			return `${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
 		}).join('\n')}
 	}`;
@@ -202,7 +203,7 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 
 	const propsBase = calcPropsBaseName({imports, section});
 	const propsInterfaceName = `${section.name}Props`;
-	const propsInterface = renderInterface(propsInterfaceName, props, propsBase, typeRenderer);
+	const propsInterface = renderInterface(propsInterfaceName, props, propsBase, typeRenderer, imports);
 
 	imports.add({
 		module: 'react',

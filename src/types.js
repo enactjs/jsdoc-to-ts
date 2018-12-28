@@ -9,7 +9,7 @@
  * A mapping of jsdoc type fields to TypeScript types
  */
 const typeMappings = {
-	Component: 'React.ComponentType',
+	Array: 'Array<any>',
 	Boolean: 'boolean',
 	Number: 'number',
 	String: 'string',
@@ -23,7 +23,17 @@ const typeMappings = {
  * @returns {String} The type definition
  */
 function renderNameExpression(type) {
-	return typeMappings[type.name] || type.name.replace(/^.*[/\.~]/, '');
+	if (type.name) {
+		if (type.name === 'Component') {
+			return 'React.ComponentType';
+		}
+		const importMatch = type.name.match(/(\w+?)\/(\w+)\.(\w+)/i);
+		if (importMatch) {
+			return type.name.replace(/[\/\.]/g, '_');
+		} else {
+			return type.name.replace(/^.*[/\.~]/, '');
+		}
+	}
 }
 
 function renderTypeApplication(type) {
@@ -72,4 +82,20 @@ function renderType(type) {
 	}
 	return typeRenderers[type.type](type);
 }
+
+function extractTypeImports(type, imports) {
+	if (type.type === 'NameExpression') {
+		const importMatch = type.name.match(/(\w+?)\/(\w+)\.(\w+)/i);
+		if (importMatch) {
+			const alias = type.name.replace(/[\/\.]/g, '_');
+			imports.add({
+				module: importMatch[1],
+				path: importMatch[2],
+				name: importMatch[3],
+				alias
+			});
+		}
+	}
+}
 exports.renderType = renderType;
+exports.extractTypeImports = extractTypeImports;
