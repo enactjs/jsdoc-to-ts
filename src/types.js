@@ -16,6 +16,13 @@ const typeMappings = {
 	Object: 'object',
 	RecordType: 'object'
 };
+
+const nameMappings = {
+	Component: 'React.ComponentType',
+	Element: 'JSX.Element',
+	Node: 'React.ReactNode'
+};
+
 /**
  * Converts a jsdoc NameExpression (from the type field) to text
  *
@@ -24,8 +31,8 @@ const typeMappings = {
  */
 function renderNameExpression(type) {
 	if (type.name) {
-		if (type.name === 'Component') {
-			return 'React.ComponentType';
+		if (nameMappings[type.name]) {
+			return nameMappings[type.name];
 		}
 		const importMatch = type.name.match(/(\w+?)\/(\w+)\.(\w+)/i);
 		if (importMatch) {
