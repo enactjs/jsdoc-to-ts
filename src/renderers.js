@@ -197,6 +197,7 @@ function defaultHocRenderer ({section, imports, typeRenderer = renderType}) {
 
 exports.defaultHocRenderer = defaultHocRenderer;
 
+// TODO: Add some hinting so we can derive the proper HTML Element to base props on (e.g. Input -> HTMLInputElement)
 function defaultComponentRenderer ({section, renderer, imports, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const funcs = section.members.instance.filter(member => member.kind === 'function');
@@ -212,7 +213,7 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 	});
 
 	return `${propsInterface}
-		export class ${section.name} extends React.Component<${propsInterfaceName}> {
+		export class ${section.name} extends React.Component<${propsInterfaceName} & React.HTMLProps<HTMLElement>> {
 			${
 				renderer({section: funcs})
 					.filter(Boolean)
