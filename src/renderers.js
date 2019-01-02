@@ -78,6 +78,9 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 
 			return `import ${spec} from "${path}";`
 		}).join('\n')}
+
+		type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
+		type Merge<M, N> = Omit<M, Extract<keyof M, keyof N>> & N;
 	`;
 
 	return `${header}${body}`;
@@ -132,17 +135,12 @@ function defaultConstantRenderer ({section, renderer}) {
 exports.defaultConstantRenderer = defaultConstantRenderer;
 
 function renderInterface (name, members, interfaceBase, typeRenderer, imports, omits) {
-	// TODO: Move this up a couple levels to prevent duplicates
-	let omitDefn = '';
-
 	if (interfaceBase && omits && omits.length) {
 		const omitString = '"' + omits.join('"|"') + '"';
-		omitDefn = 'type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>';
 		interfaceBase = `Omit<${interfaceBase}, ${omitString}>`;
 	}
 
-	return `${omitDefn}
-		export interface ${name} ${interfaceBase ? `extends ${interfaceBase}` : ''} {
+	return `export interface ${name} ${interfaceBase ? `extends ${interfaceBase}` : ''} {
 		${members.map(member => {
 			const required = hasRequiredTag(member) ? '' : '?';
 			extractTypeImports(member.type, imports);
@@ -175,7 +173,13 @@ function calcPropsBaseName ({imports, section}) {
 		}
 
 		return false;
-	}).filter(Boolean).join(', ');
+	}).filter(Boolean).reduce((output, name) => {
+		if (!output) {
+			return name;
+		} else {
+			return `Merge<${output}, ${name}>`;
+		}
+	}, '');
 }
 
 function defaultHocRenderer ({section, imports, typeRenderer = renderType}) {
