@@ -131,8 +131,18 @@ function defaultConstantRenderer ({section, renderer}) {
 
 exports.defaultConstantRenderer = defaultConstantRenderer;
 
-function renderInterface (name, members, interfaceBase, typeRenderer, imports) {
-	return `export interface ${name} ${interfaceBase ? `extends ${interfaceBase}` : ''} {
+function renderInterface (name, members, interfaceBase, typeRenderer, imports, omits) {
+	// TODO: Move this up a couple levels to prevent duplicates
+	let omitDefn = '';
+
+	if (interfaceBase && omits && omits.length) {
+		const omitString = '"' + omits.join('"|"') + '"';
+		omitDefn = 'type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>';
+		interfaceBase = `Omit<${interfaceBase}, ${omitString}>`;
+	}
+
+	return `${omitDefn}
+		export interface ${name} ${interfaceBase ? `extends ${interfaceBase}` : ''} {
 		${members.map(member => {
 			const required = hasRequiredTag(member) ? '' : '?';
 			extractTypeImports(member.type, imports);
@@ -202,9 +212,10 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 	const props = section.members.instance.filter(member => !member.kind);
 	const funcs = section.members.instance.filter(member => member.kind === 'function');
 
+	const omits = section.tags.reduce((res, tag) => tag.title === 'omit' ? res.concat(tag.description) : res, []);
 	const propsBase = calcPropsBaseName({imports, section});
 	const propsInterfaceName = `${section.name}Props`;
-	const propsInterface = renderInterface(propsInterfaceName, props, propsBase, typeRenderer, imports);
+	const propsInterface = renderInterface(propsInterfaceName, props, propsBase, typeRenderer, imports, omits);
 
 	imports.add({
 		module: 'react',
