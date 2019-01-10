@@ -56,6 +56,25 @@ function getSourceFiles (base) {
 		});
 }
 
+function resolveOutputFilename (modulePath, moduleName) {
+	let name;
+
+	const packageJson = path.join(modulePath, 'package.json');
+	if (fs.existsSync(packageJson)) {
+		name = require(packageJson).main.replace(sourceExtension, '');
+	}
+
+	if (!name) {
+		if (moduleName) {
+			name = moduleName.replace(/.*\//, '');
+		} else {
+			name = path.basename(modulePath).replace(sourceExtension, '');
+		}
+	}
+
+	return name;
+}
+
 function isRequired (name) {
 	throw new Error(`${name} is a required argument`);
 }
@@ -70,14 +89,7 @@ function main ({package: base = isRequired('package'), logLevel = 'error', forma
 			format,
 			importMap,
 			output: (moduleName, result) => {
-				let name;
-
-				if (moduleName) {
-					name = moduleName.replace(/.*\//, '');
-				} else {
-					name = path.basename(moduleEntry.path).replace(sourceExtension, '');
-				}
-
+				const name = resolveOutputFilename(moduleEntry.path, moduleName);
 				const file = `${name}.d.ts`;
 				output(path.join(outputBase, file), result);
 			}
