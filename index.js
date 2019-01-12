@@ -39,7 +39,7 @@ function parse ({path: modulePath, files, format, importMap, output}) {
 	});
 }
 
-function getSourceFiles (base) {
+function getSourceFiles (base, ignore) {
 	return new Promise((resolve, reject) => {
 		glob('**/package.json', {cwd: base}, (er, files) => {
 			if (er) {
@@ -48,7 +48,7 @@ function getSourceFiles (base) {
 			}
 
 			const entries = files
-				.filter(name => !name.includes('node_modules'))
+				.filter(name => !ignore.find(i => name.includes(i)))
 				.map(relativePackageJsonPath => {
 					const packageJsonPath = path.join(base, relativePackageJsonPath);
 					const pkg = require(packageJsonPath);
@@ -74,6 +74,7 @@ function isRequired (name) {
 
 function main ({
 	output = isRequired('output'),
+	ignore = ['node_modules'],
 	package: base = isRequired('package'),
 	format = true,
 	importMap,
@@ -82,7 +83,7 @@ function main ({
 }) {
 	log.setLevel(logLevel);
 
-	getSourceFiles(path.resolve(base)).then(files => {
+	getSourceFiles(path.resolve(base), ignore).then(files => {
 		files.forEach(moduleEntry => {
 			parse({
 				...moduleEntry,
