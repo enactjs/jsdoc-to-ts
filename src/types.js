@@ -37,6 +37,8 @@ function renderNameExpression(type) {
 		const importMatch = type.name.match(/(\w+?)\/(\w+)\.(\w+)/i);
 		if (importMatch) {
 			return type.name.replace(/[\/\.]/g, '_');
+		} else if (typeMappings[type.name]) {
+			return typeMappings[type.name];
 		} else {
 			return type.name.replace(/^.*[/\.~]/, '');
 		}
