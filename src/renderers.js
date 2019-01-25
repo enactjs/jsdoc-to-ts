@@ -91,6 +91,10 @@ exports.defaultModuleRenderer = defaultModuleRenderer;
 function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
 	let returns = 'void';
 
+	const placeholders = section.tags
+		.filter(tag => tag.title === 'template')
+		.map(tag => tag.description);
+
 	const parameters = section.params.map(({name, type}) => {
 		if (!type) {
 			return 'any';
@@ -104,14 +108,16 @@ function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
 			type = type.expression;
 		}
 
-		return `${rest}${name}${optional}: ${typeRenderer(type)}`;
+		return `${rest}${name}${optional}: ${typeRenderer(type, placeholders)}`;
 	});
 
 	if (section.returns.length) {
-		returns = typeRenderer(section.returns[0].type);
+		returns = typeRenderer(section.returns[0].type, placeholders);
 	}
 
-	return `function ${section.name}(${parameters.join(', ')}): ${returns};`
+	const templates = placeholders.length === 0 ? '' : `<${placeholders.join(', ')}>`;
+
+	return `function ${section.name}${templates}(${parameters.join(', ')}): ${returns};`
 }
 
 exports.defaultFunctionRenderer = defaultFunctionRenderer;

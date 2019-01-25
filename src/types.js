@@ -45,13 +45,33 @@ function renderNameExpression(type) {
 	}
 }
 
-function renderTypeApplication(type) {
+function renderGeneric(type, templates) {
+	const renderedType = renderType(type.expression);
+	if (!Array.isArray(templates)) {
+		return renderType;
+	}
+
+	const generics = type.applications
+		.map(app => app.name)
+		.filter(name => templates.includes(name));
+
+	if (generics.length === 0) {
+		// warn ...
+		return renderedType;
+	}
+
+	return `${renderedType}<${generics.join(', ')}>`;
+}
+
+function renderTypeApplication(type, templates) {
 	if (type.expression.type === 'NameExpression') {
 		switch (type.expression.name) {
 			case 'Object':
 				return `{[key: ${renderType(type.applications[0])}]: ${renderType(type.applications[1])}}`;
 			case 'Array':
 				return `${renderType(type.applications[0])}[]`;
+			default:
+				return renderGeneric(type, templates);
 		}
 	}
 
@@ -85,11 +105,11 @@ const typeRenderers = {
 	UnionType: renderUnionType,
 	BooleanLiteralType: renderLiteral
 };
-function renderType(type) {
+function renderType(type, templates) {
 	if (!typeRenderers[type.type]) {
 		return 'any';
 	}
-	return typeRenderers[type.type](type);
+	return typeRenderers[type.type](type, templates);
 }
 
 function extractTypeImports(type, imports) {
