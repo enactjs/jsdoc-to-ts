@@ -42,7 +42,9 @@ function makeParser (
 						section,
 						typedefs,
 						...rest,
+						// Indicates descendants should export defs vs only declare
 						export: false,
+						// Indicates descendants are instance members which can affect format
 						instance: false,
 						...args,
 						log,
