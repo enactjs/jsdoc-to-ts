@@ -9,7 +9,6 @@ const {renderParam} = require('./params');
 function joinValues (node) {
 	if (!node) return '';
 
-	// inlineCode, emphasis, text, listItem, list, code
 	let v = node.children ? node.children.map(joinValues).join(' ') : node.value || '';
 
 	switch (node.type) {
