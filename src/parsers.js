@@ -38,7 +38,16 @@ function makeParser (
 				parent: section,
 				root,
 				renderer: (args) => {
-					return parser({section, typedefs, ...rest, ...args, log, root});
+					return parser({
+						section,
+						typedefs,
+						...rest,
+						export: false,
+						instance: false,
+						...args,
+						log,
+						root
+					});
 				},
 				section: item,
 				typedefs

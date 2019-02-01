@@ -6,12 +6,36 @@ const {escapeClassMember, hasRequiredTag} = require('./utils');
 const {renderType, extractTypeImports} = require('./types');
 const {renderParam} = require('./params');
 
-function isExports (tag) {
-	return tag.title === 'exports';
+function joinValues (node) {
+
+	// inlineCode, emphasis, text, listItem, list, code
+	let v = node.value;
+
+	switch (node.type) {
+		case 'emphasis':
+			return `_${v}`;
+		case 'inlineCode':
+			return `\`${v}\``;
+		case 'code':
+			return '```\n' + v + '\n```';
+		case 'text':
+			return v;
+	}
+
+	if (node.children) {
+		return node.children.map(joinValues).join('\n * ') + '\n\n';
+	}
+
+	return v || '';
 }
 
-function exportDeclare (fn) {
-	return fn.includes('export') ? fn : `export declare ${fn}`;
+function renderDescription (description) {
+	const desc = joinValues(description);
+	return desc ? `/**\n * ${desc}\n*/\n` : '';
+}
+
+function isExports (tag) {
+	return tag.title === 'exports';
 }
 
 function exportDeclarations (moduleName) {
@@ -46,9 +70,8 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 
 	const body = `
 		${
-			renderer({section: section.members.static, imports})
+			renderer({section: section.members.static, imports, export: true})
 				.filter(Boolean)
-				.map(exportDeclare)
 				.join('\n')
 		}
 
@@ -88,7 +111,7 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 
 exports.defaultModuleRenderer = defaultModuleRenderer;
 
-function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
+function defaultFunctionRenderer ({section, export: exp = false, instance = false, typeRenderer = renderType}) {
 	let returns = 'void';
 
 	const placeholders = section.tags
@@ -117,7 +140,7 @@ function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
 
 	const templates = placeholders.length === 0 ? '' : `<${placeholders.join(', ')}>`;
 
-	return `function ${section.name}${templates}(${parameters.join(', ')}): ${returns};`
+	return `${renderDescription(section.description)}${exp ? 'export ' : ''}${instance ? '' : 'function '}${section.name}${templates}(${parameters.join(', ')}): ${returns};`
 }
 
 exports.defaultFunctionRenderer = defaultFunctionRenderer;
@@ -130,9 +153,8 @@ function defaultConstantRenderer ({section, renderer}) {
 
 	return `${declaration} {
 		${
-			renderer({section: section.members.static})
+			renderer({section: section.members.static, instance: true})
 				.filter(Boolean)
-				.map(fn => fn.replace(/^function /, ''))
 				.join('\n')
 		}
 	};`;
@@ -150,7 +172,7 @@ function renderInterface (name, members, interfaceBase, typeRenderer, imports, o
 		${members.map(member => {
 			const required = hasRequiredTag(member) ? '' : '?';
 			extractTypeImports(member.type, imports);
-			return `${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
+			return `${renderDescription(member.description)}${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
 		}).join('\n')}
 	}`;
 }
@@ -234,11 +256,11 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 	});
 
 	return `${propsInterface}
+		${renderDescription(section.description)}
 		export class ${section.name} extends React.Component<${propsInterfaceName} & React.HTMLProps<HTMLElement>> {
 			${
-				renderer({section: funcs})
+				renderer({section: funcs, export: false, instance: true})
 					.filter(Boolean)
-					.map(fn => fn.replace(/^function /, ''))
 					.join('\n')
 			}
 		}
@@ -253,9 +275,8 @@ function defaultClassRenderer ({section, renderer}) {
 			`constructor(${section.constructorComment.params.map(prop => renderParam(prop, renderType)).join(', ')});`
 		) : ''}
 		${
-			renderer({section: section.members.instance})
+			renderer({section: section.members.instance, instance: true})
 				.filter(Boolean)
-				.map(fn => fn.replace(/^function /, ''))
 				.join('\n')
 		}
 	};\n`;
