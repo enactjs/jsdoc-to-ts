@@ -7,31 +7,32 @@ const {renderType, extractTypeImports} = require('./types');
 const {renderParam} = require('./params');
 
 function joinValues (node) {
+	if (!node) return '';
 
 	// inlineCode, emphasis, text, listItem, list, code
-	let v = node.value;
+	let v = node.children ? node.children.map(joinValues).join(' ') : node.value || '';
 
 	switch (node.type) {
+		case 'link':
+			return '';
+		case 'listItem':
+			return `* ${v.replace(/^\n *\*/, '')}`;
 		case 'emphasis':
 			return `_${v}`;
 		case 'inlineCode':
 			return `\`${v}\``;
 		case 'code':
-			return '```\n' + v + '\n```';
-		case 'text':
-			return v;
-	}
-
-	if (node.children) {
-		return node.children.map(joinValues).join('\n * ') + '\n\n';
+			return '```\n' + v + '\n```\n';
+		case 'paragraph':
+			return '\n * ' + v + '\n *';
 	}
 
 	return v || '';
 }
 
-function renderDescription (description) {
-	const desc = joinValues(description);
-	return desc ? `/**\n * ${desc}\n*/\n` : '';
+function renderDescription (section) {
+	const desc = joinValues(section.description).replace(/\n \*$/g, '\n');
+	return desc ? `/**${desc} */\n` : '';
 }
 
 function isExports (tag) {
@@ -140,13 +141,13 @@ function defaultFunctionRenderer ({section, export: exp = false, instance = fals
 
 	const templates = placeholders.length === 0 ? '' : `<${placeholders.join(', ')}>`;
 
-	return `${renderDescription(section.description)}${exp ? 'export ' : ''}${instance ? '' : 'function '}${section.name}${templates}(${parameters.join(', ')}): ${returns};`
+	return `${renderDescription(section)}${exp ? 'export ' : ''}${instance ? '' : 'function '}${section.name}${templates}(${parameters.join(', ')}): ${returns};`
 }
 
 exports.defaultFunctionRenderer = defaultFunctionRenderer;
 
-function defaultConstantRenderer ({section, renderer}) {
-	const declaration = `var ${section.name}:`;
+function defaultConstantRenderer ({section, export: exp, renderer}) {
+	const declaration = `${renderDescription(section)}${exp ? 'export ' : ''}declare var ${section.name}:`;
 	if (section.members.static.length === 0) {
 		return `${declaration} ${renderType(section.type)};`;
 	}
@@ -172,7 +173,7 @@ function renderInterface (name, members, interfaceBase, typeRenderer, imports, o
 		${members.map(member => {
 			const required = hasRequiredTag(member) ? '' : '?';
 			extractTypeImports(member.type, imports);
-			return `${renderDescription(member.description)}${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
+			return `${renderDescription(member)}${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
 		}).join('\n')}
 	}`;
 }
@@ -256,7 +257,7 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 	});
 
 	return `${propsInterface}
-		${renderDescription(section.description)}
+		${renderDescription(section)}
 		export class ${section.name} extends React.Component<${propsInterfaceName} & React.HTMLProps<HTMLElement>> {
 			${
 				renderer({section: funcs, export: false, instance: true})
@@ -269,8 +270,10 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 
 exports.defaultComponentRenderer = defaultComponentRenderer;
 
-function defaultClassRenderer ({section, renderer}) {
-	return `export declare class ${section.name} {
+function defaultClassRenderer ({section, export: exp, renderer}) {
+	return `
+	${renderDescription(section)}
+	${exp ? 'export ' : ''}declare class ${section.name} {
 		${section.constructorComment ? (
 			`constructor(${section.constructorComment.params.map(prop => renderParam(prop, renderType)).join(', ')});`
 		) : ''}
@@ -284,21 +287,21 @@ function defaultClassRenderer ({section, renderer}) {
 
 exports.defaultClassRenderer = defaultClassRenderer;
 
-function defaultTypedefRenderer ({section}) {
+function defaultTypedefRenderer ({section, export: exp}) {
 	let outputStr;
 
 	if (section.type.name === 'Object') {
-		outputStr = `interface ${section.name} {
+		outputStr = `${exp ? 'export ' : ''}interface ${section.name} {
 			${section.properties.map(prop => renderParam(prop, renderType)).join(',')}
 		}`;
 	}
 	else if (section.type.name === 'Function') {
 		const params = section.params.map(prop => renderParam(prop, renderType)).join(', ');
 		const ret = section.returns.length === 0 ? 'void' : renderType(section.returns[0]);
-		outputStr = `interface ${section.name} { (${params}): ${ret}; }`;
+		outputStr = `${exp ? 'export ' : ''}interface ${section.name} { (${params}): ${ret}; }`;
 	}
 
-	return outputStr;
+	return `${renderDescription(section)}${outputStr}`;
 }
 
 exports.defaultTypedefRenderer = defaultTypedefRenderer;
