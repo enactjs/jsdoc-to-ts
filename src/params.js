@@ -5,17 +5,17 @@
  * @module params
  */
 
-function renderParam(param, typeRenderer) {
-    let {name, type} = param;
-    let optional = '';
-    if (type.type === 'OptionalType') {
-        optional = '?';
-        type = type.expression;
-    }
+ const {renderDescription} = require('./description');
 
-    return `${name}${optional}: ${typeRenderer(type)}`
+function renderParam (param, typeRenderer) {
+	let {name, type} = param;
+	let optional = '';
+	if (type.type === 'OptionalType') {
+		optional = '?';
+		type = type.expression;
+	}
+
+	return `${renderDescription(param)}${name}${optional}: ${typeRenderer(type)}`
 }
 
 exports.renderParam = renderParam;
-
-

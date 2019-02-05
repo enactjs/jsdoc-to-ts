@@ -3,15 +3,12 @@
  * Rendering functions and the default set of renderers
  */
 const {escapeClassMember, hasRequiredTag} = require('./utils');
-const {renderType, extractTypeImports} = require('./types');
+const {renderDescription} = require("./description");
 const {renderParam} = require('./params');
+const {renderType, extractTypeImports} = require('./types');
 
 function isExports (tag) {
 	return tag.title === 'exports';
-}
-
-function exportDeclare (fn) {
-	return fn.includes('export') ? fn : `export declare ${fn}`;
 }
 
 function exportDeclarations (moduleName) {
@@ -46,9 +43,8 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 
 	const body = `
 		${
-			renderer({section: section.members.static, imports})
+			renderer({section: section.members.static, imports, export: true})
 				.filter(Boolean)
-				.map(exportDeclare)
 				.join('\n')
 		}
 
@@ -88,7 +84,7 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 
 exports.defaultModuleRenderer = defaultModuleRenderer;
 
-function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
+function defaultFunctionRenderer ({section, export: exp = false, instance = false, typeRenderer = renderType}) {
 	let returns = 'void';
 
 	const placeholders = section.tags
@@ -117,22 +113,21 @@ function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
 
 	const templates = placeholders.length === 0 ? '' : `<${placeholders.join(', ')}>`;
 
-	return `function ${section.name}${templates}(${parameters.join(', ')}): ${returns};`
+	return `${renderDescription(section)}${exp ? 'export ' : ''}${instance ? '' : 'function '}${section.name}${templates}(${parameters.join(', ')}): ${returns};`
 }
 
 exports.defaultFunctionRenderer = defaultFunctionRenderer;
 
-function defaultConstantRenderer ({section, renderer}) {
-	const declaration = `var ${section.name}:`;
+function defaultConstantRenderer ({section, export: exp, renderer}) {
+	const declaration = `${renderDescription(section)}${exp ? 'export ' : ''}declare var ${section.name}:`;
 	if (section.members.static.length === 0) {
 		return `${declaration} ${renderType(section.type)};`;
 	}
 
 	return `${declaration} {
 		${
-			renderer({section: section.members.static})
+			renderer({section: section.members.static, instance: true})
 				.filter(Boolean)
-				.map(fn => fn.replace(/^function /, ''))
 				.join('\n')
 		}
 	};`;
@@ -150,7 +145,7 @@ function renderInterface (name, members, interfaceBase, typeRenderer, imports, o
 		${members.map(member => {
 			const required = hasRequiredTag(member) ? '' : '?';
 			extractTypeImports(member.type, imports);
-			return `${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
+			return `${renderDescription(member)}${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
 		}).join('\n')}
 	}`;
 }
@@ -234,11 +229,11 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 	});
 
 	return `${propsInterface}
+		${renderDescription(section)}
 		export class ${section.name} extends React.Component<${propsInterfaceName} & React.HTMLProps<HTMLElement>> {
 			${
-				renderer({section: funcs})
+				renderer({section: funcs, export: false, instance: true})
 					.filter(Boolean)
-					.map(fn => fn.replace(/^function /, ''))
 					.join('\n')
 			}
 		}
@@ -247,15 +242,16 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 
 exports.defaultComponentRenderer = defaultComponentRenderer;
 
-function defaultClassRenderer ({section, renderer}) {
-	return `export declare class ${section.name} {
+function defaultClassRenderer ({section, export: exp, renderer}) {
+	return `
+	${renderDescription(section)}
+	${exp ? 'export ' : ''}declare class ${section.name} {
 		${section.constructorComment ? (
 			`constructor(${section.constructorComment.params.map(prop => renderParam(prop, renderType)).join(', ')});`
 		) : ''}
 		${
-			renderer({section: section.members.instance})
+			renderer({section: section.members.instance, instance: true})
 				.filter(Boolean)
-				.map(fn => fn.replace(/^function /, ''))
 				.join('\n')
 		}
 	};\n`;
@@ -263,21 +259,21 @@ function defaultClassRenderer ({section, renderer}) {
 
 exports.defaultClassRenderer = defaultClassRenderer;
 
-function defaultTypedefRenderer ({section}) {
+function defaultTypedefRenderer ({section, export: exp}) {
 	let outputStr;
 
 	if (section.type.name === 'Object') {
-		outputStr = `interface ${section.name} {
+		outputStr = `${exp ? 'export ' : ''}interface ${section.name} {
 			${section.properties.map(prop => renderParam(prop, renderType)).join(',')}
 		}`;
 	}
 	else if (section.type.name === 'Function') {
 		const params = section.params.map(prop => renderParam(prop, renderType)).join(', ');
 		const ret = section.returns.length === 0 ? 'void' : renderType(section.returns[0]);
-		outputStr = `interface ${section.name} { (${params}): ${ret}; }`;
+		outputStr = `${exp ? 'export ' : ''}interface ${section.name} { (${params}): ${ret}; }`;
 	}
 
-	return outputStr;
+	return `${renderDescription(section)}${outputStr}`;
 }
 
 exports.defaultTypedefRenderer = defaultTypedefRenderer;
