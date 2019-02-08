@@ -88,14 +88,48 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 
 exports.defaultModuleRenderer = defaultModuleRenderer;
 
-function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
-	let returns = 'void';
+function uniq (arr) {
+	return arr.reduce((r, v) => {
+		if (!r.includes(v)) {
+			r.push(v);
+		}
 
-	const placeholders = section.tags
-		.filter(tag => tag.title === 'template')
-		.map(tag => tag.description);
+		return r;
+	}, []);
+}
 
-	const parameters = section.params.map(({name, type}) => {
+function permute (base) {
+	if (base === 0) {
+		return [];
+	}
+
+	const result = [String(base)];
+
+	for (let i = 1; i < base; i++) {
+		const lower = permute(i);
+		const upper = permute(base - i);
+		lower.forEach(l => upper.forEach(u => {
+			const v = l + u;
+			if (!result.includes(v)) {
+				result.push(v);
+			}
+		}));
+	}
+
+	return uniq(result);
+}
+
+function permuteParameters (parameters) {
+	return permute(parameters.length)
+		.map(s => Array.from(s, Number))
+		.map(counts => {
+			const params = parameters.slice();
+			return counts.map(c => params.splice(0, c));
+		});
+}
+
+function formatParameters (parameters, placeholders, typeRenderer) {
+	const output = parameters.map(({name, type}) => {
 		if (!type) {
 			return 'any';
 		}
@@ -109,7 +143,23 @@ function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
 		}
 
 		return `${rest}${name}${optional}: ${typeRenderer(type, placeholders)}`;
-	});
+	}).join(', ');
+
+	return `(${output})`;
+}
+
+const formatFunction = (name, templates, params, ret) => {
+	return `function ${name}${templates}${params}: ${ret};`;
+}
+
+function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
+	let returns = 'void';
+
+	const parameters = section.params;
+	const placeholders = section.tags
+		.filter(tag => tag.title === 'template')
+		.map(tag => tag.description);
+	const parametersOutput = formatParameters(parameters, placeholders, typeRenderer);
 
 	if (section.returns.length) {
 		returns = typeRenderer(section.returns[0].type, placeholders);
@@ -117,7 +167,20 @@ function defaultFunctionRenderer ({section, typeRenderer = renderType}) {
 
 	const templates = placeholders.length === 0 ? '' : `<${placeholders.join(', ')}>`;
 
-	return `function ${section.name}${templates}(${parameters.join(', ')}): ${returns};`
+	if (section.tags.find(t => t.title === 'curried')) {
+		return permuteParameters(parameters).map(params => {
+			const first = formatParameters(params[0], placeholders, typeRenderer);
+			if (params.length === 1) {
+				return formatFunction(section.name, templates, first, returns);
+			}
+
+			const formattedParams = params.slice(1).map(p => formatParameters(p, placeholders, typeRenderer)).join(' => ');
+			const ret = `${formattedParams} => ${returns}`;
+			return formatFunction(section.name, templates, first, ret);
+		}).join('\n');
+	}
+
+	return formatFunction(section.name, templates, parametersOutput, returns);
 }
 
 exports.defaultFunctionRenderer = defaultFunctionRenderer;
