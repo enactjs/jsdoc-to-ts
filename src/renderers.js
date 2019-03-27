@@ -107,7 +107,7 @@ function defaultFunctionRenderer ({section, export: exp = false, instance = fals
 		return `${rest}${name}${optional}: ${typeRenderer(type, placeholders)}`;
 	});
 
-	if (section.returns.length) {
+	if (section.returns.length && section.returns[0].type) {
 		returns = typeRenderer(section.returns[0].type, placeholders);
 	}
 

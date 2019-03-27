@@ -106,7 +106,7 @@ const typeRenderers = {
 	BooleanLiteralType: renderLiteral
 };
 function renderType(type, templates) {
-	if (!typeRenderers[type.type]) {
+	if (!type || !typeRenderers[type.type]) {
 		return 'any';
 	}
 	return typeRenderers[type.type](type, templates);
