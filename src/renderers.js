@@ -271,6 +271,8 @@ function defaultTypedefRenderer ({section, export: exp}) {
 		const params = section.params.map(prop => renderParam(prop, renderType)).join(', ');
 		const ret = section.returns.length === 0 ? 'void' : renderType(section.returns[0]);
 		outputStr = `${exp ? 'export ' : ''}interface ${section.name} { (${params}): ${ret}; }`;
+	} else {
+		outputStr = `${exp ? 'export ' : ''}type ${section.name} = ${section.type.name}`;
 	}
 
 	return `${renderDescription(section)}${outputStr}`;
