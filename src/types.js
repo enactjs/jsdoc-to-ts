@@ -94,16 +94,26 @@ function renderLiteral (type) {
 	return type.value;
 }
 
+function renderAllLiteral (type) {
+	return 'any';
+}
+
+function renderStringLiteral (type) {
+	return `'${type.value}'`;
+}
+
 /**
  * Render various type strings
  */
 const typeRenderers = {
+	AllLiteral: renderAllLiteral,
+	BooleanLiteralType: renderLiteral,
 	NameExpression: renderNameExpression,
 	RestType: renderRestType,
+	StringLiteralType: renderStringLiteral,
 	TypeApplication: renderTypeApplication,
 	UndefinedLiteral: renderVoid,
-	UnionType: renderUnionType,
-	BooleanLiteralType: renderLiteral
+	UnionType: renderUnionType
 };
 function renderType(type, templates) {
 	if (!type || !typeRenderers[type.type]) {
