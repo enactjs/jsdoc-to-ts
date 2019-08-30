@@ -15,6 +15,9 @@ function exportDeclarations (moduleName) {
 	return function (tag) {
 		if (tag.description === moduleName) {
 			return `export default ${tag.description}`;
+		} else if (tag.description.indexOf('default ') == 0) {
+			const name = tag.description.slice(8);
+			return `export default ${name}`;
 		}
 
 		return '';
@@ -40,6 +43,10 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 		},
 		entries: []
 	};
+
+	if (!section.tags.filter(isExports).length) {
+		console.log(`No @exports found in ${moduleName}`);
+	}
 
 	const body = `
 		${
@@ -119,7 +126,7 @@ function defaultFunctionRenderer ({section, export: exp = false, instance = fals
 exports.defaultFunctionRenderer = defaultFunctionRenderer;
 
 function defaultConstantRenderer ({section, export: exp, renderer}) {
-	const declaration = `${renderDescription(section)}${exp ? 'export ' : ''}declare var ${section.name}:`;
+	const declaration = `${renderDescription(section)}${exp ? 'export ' : ''}declare const ${section.name}:`;
 	if (section.members.static.length === 0) {
 		return `${declaration} ${renderType(section.type)};`;
 	}
