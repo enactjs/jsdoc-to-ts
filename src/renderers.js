@@ -126,7 +126,7 @@ function defaultFunctionRenderer ({section, export: exp = false, instance = fals
 exports.defaultFunctionRenderer = defaultFunctionRenderer;
 
 function defaultConstantRenderer ({section, export: exp, renderer}) {
-	const declaration = `${renderDescription(section)}${exp ? 'export ' : ''}declare var ${section.name}:`;
+	const declaration = `${renderDescription(section)}${exp ? 'export ' : ''}declare const ${section.name}:`;
 	if (section.members.static.length === 0) {
 		return `${declaration} ${renderType(section.type)};`;
 	}
