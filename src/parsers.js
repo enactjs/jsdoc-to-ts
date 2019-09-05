@@ -38,7 +38,18 @@ function makeParser (
 				parent: section,
 				root,
 				renderer: (args) => {
-					return parser({section, typedefs, ...rest, ...args, log, root});
+					return parser({
+						section,
+						typedefs,
+						...rest,
+						// Indicates descendants should export defs vs only declare
+						export: false,
+						// Indicates descendants are instance members which can affect format
+						instance: false,
+						...args,
+						log,
+						root
+					});
 				},
 				section: item,
 				typedefs
