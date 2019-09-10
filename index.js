@@ -74,7 +74,7 @@ function isRequired (name) {
 
 function main ({
 	output = isRequired('output'),
-	ignore = ['node_modules'],
+	ignore = ['node_modules', 'build', 'dist', 'coverage'],
 	package: base = isRequired('package'),
 	format = true,
 	importMap,

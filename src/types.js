@@ -29,7 +29,7 @@ const nameMappings = {
  * @param {Object} type
  * @returns {String} The type definition
  */
-function renderNameExpression(type) {
+function renderNameExpression (type) {
 	if (type.name) {
 		if (nameMappings[type.name]) {
 			return nameMappings[type.name];
@@ -45,7 +45,7 @@ function renderNameExpression(type) {
 	}
 }
 
-function renderGeneric(type, templates) {
+function renderGeneric (type, templates) {
 	const renderedType = renderType(type.expression);
 	if (!Array.isArray(templates)) {
 		return renderType;
@@ -63,7 +63,7 @@ function renderGeneric(type, templates) {
 	return `${renderedType}<${generics.join(', ')}>`;
 }
 
-function renderTypeApplication(type, templates) {
+function renderTypeApplication (type, templates) {
 	if (type.expression.type === 'NameExpression') {
 		switch (type.expression.name) {
 			case 'Object':
@@ -78,11 +78,23 @@ function renderTypeApplication(type, templates) {
 	return 'any';
 }
 
-function renderUnionType(type) {
+function renderUnionType (type) {
 	return type.elements.map(el => renderType(el)).join(' | ');
 }
 
-function renderRestType(type) {
+function renderRecordType (type, templates) {
+	if (type.fields && type.fields.length) {
+		const fieldNames = type.fields.map(
+			field => `${field.key}: ${renderType(field.value, templates)}`
+		);
+		fieldNames.push('[propName: string]: any');
+		return `{${fieldNames.join(', ')}}`;
+	} else {
+		return 'object';
+	}
+}
+
+function renderRestType (type) {
 	return `${renderType(type.expression)}[]`;
 }
 
@@ -94,25 +106,36 @@ function renderLiteral (type) {
 	return type.value;
 }
 
+function renderAllLiteral (type) {
+	return 'any';
+}
+
+function renderStringLiteral (type) {
+	return `'${type.value}'`;
+}
+
 /**
  * Render various type strings
  */
 const typeRenderers = {
+	AllLiteral: renderAllLiteral,
+	BooleanLiteralType: renderLiteral,
 	NameExpression: renderNameExpression,
+	RecordType: renderRecordType,
 	RestType: renderRestType,
+	StringLiteralType: renderStringLiteral,
 	TypeApplication: renderTypeApplication,
 	UndefinedLiteral: renderVoid,
-	UnionType: renderUnionType,
-	BooleanLiteralType: renderLiteral
+	UnionType: renderUnionType
 };
-function renderType(type, templates) {
-	if (!typeRenderers[type.type]) {
+function renderType (type, templates) {
+	if (!type || !typeRenderers[type.type]) {
 		return 'any';
 	}
 	return typeRenderers[type.type](type, templates);
 }
 
-function extractTypeImports(type, imports) {
+function extractTypeImports (type, imports) {
 	if (type.type === 'NameExpression') {
 		const importMatch = type.name.match(/(\w+?)\/(\w+)\.(\w+)/i);
 		if (importMatch) {

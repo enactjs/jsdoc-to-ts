@@ -15,6 +15,9 @@ function exportDeclarations (moduleName) {
 	return function (tag) {
 		if (tag.description === moduleName) {
 			return `export default ${tag.description}`;
+		} else if (tag.description.indexOf('default ') == 0) {
+			const name = tag.description.slice(8);
+			return `export default ${name}`;
 		}
 
 		return '';
@@ -40,6 +43,10 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 		},
 		entries: []
 	};
+
+	if (!section.tags.filter(isExports).length) {
+		console.log(`No @exports found in ${moduleName}`);
+	}
 
 	const body = `
 		${
@@ -160,7 +167,7 @@ function defaultFunctionRenderer ({section, export: exp = false, instance = fals
 		.map(tag => tag.description);
 	const parametersOutput = formatParameters(parameters, placeholders, typeRenderer);
 
-	if (section.returns.length) {
+	if (section.returns.length && section.returns[0].type) {
 		returns = typeRenderer(section.returns[0].type, placeholders);
 	}
 
@@ -185,7 +192,7 @@ function defaultFunctionRenderer ({section, export: exp = false, instance = fals
 exports.defaultFunctionRenderer = defaultFunctionRenderer;
 
 function defaultConstantRenderer ({section, export: exp, renderer}) {
-	const declaration = `${renderDescription(section)}${exp ? 'export ' : ''}declare var ${section.name}:`;
+	const declaration = `${renderDescription(section)}${exp ? 'export ' : ''}declare const ${section.name}:`;
 	if (section.members.static.length === 0) {
 		return `${declaration} ${renderType(section.type)};`;
 	}
@@ -337,6 +344,8 @@ function defaultTypedefRenderer ({section, export: exp}) {
 		const params = section.params.map(prop => renderParam(prop, renderType)).join(', ');
 		const ret = section.returns.length === 0 ? 'void' : renderType(section.returns[0]);
 		outputStr = `${exp ? 'export ' : ''}interface ${section.name} { (${params}): ${ret}; }`;
+	} else {
+		outputStr = `${exp ? 'export ' : ''}type ${section.name} = ${section.type.name}`;
 	}
 
 	return `${renderDescription(section)}${outputStr}`;
