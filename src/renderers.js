@@ -151,8 +151,9 @@ function formatParameters (parameters, placeholders, typeRenderer) {
 	return `(${output})`;
 }
 
-const formatFunction = (exp, instance, name, templates, params, ret) => {
-	return (exp ? 'export ' : '') +
+const formatFunction = (section, exp, instance, name, templates, params, ret) => {
+	return renderDescription(section) +
+			(exp ? 'export ' : '') +
 			(instance ? '' : 'function ') +
 			`${name}${templates}${params}: ${ret};`;
 }
@@ -171,22 +172,21 @@ function defaultFunctionRenderer ({section, export: exp = false, instance = fals
 	}
 
 	const templates = placeholders.length === 0 ? '' : `<${placeholders.join(', ')}>`;
-	const desc = renderDescription(section);
 
 	if (section.tags.find(t => t.title === 'curried')) {
-		return desc +permuteParameters(parameters).map(params => {
+		return permuteParameters(parameters).map(params => {
 			const first = formatParameters(params[0], placeholders, typeRenderer);
 			if (params.length === 1) {
-				return formatFunction(exp, instance, section.name, templates, first, returns);
+				return formatFunction(section, exp, instance, section.name, templates, first, returns);
 			}
 
 			const formattedParams = params.slice(1).map(p => formatParameters(p, placeholders, typeRenderer)).join(' => ');
 			const ret = `${formattedParams} => ${returns}`;
-			return formatFunction(exp, instance, section.name, templates, first, ret);
+			return formatFunction(section, exp, instance, section.name, templates, first, ret);
 		}).join('\n');
 	}
 
-	return desc + formatFunction(exp, instance, section.name, templates, parametersOutput, returns);
+	return formatFunction(section, exp, instance, section.name, templates, parametersOutput, returns);
 }
 
 exports.defaultFunctionRenderer = defaultFunctionRenderer;
