@@ -94,6 +94,17 @@ function renderRecordType (type, templates) {
 	}
 }
 
+function renderArrayType (type, templates) {
+	if (type.elements && type.elements.length) {
+		const entries = type.elements.map(
+			element => renderType(element, templates)
+		);
+		return `[${entries.join(', ')}]`;
+	} else {
+		return 'Array';
+	}
+}
+
 function renderRestType (type) {
 	return `${renderType(type.expression)}[]`;
 }
@@ -119,6 +130,7 @@ function renderStringLiteral (type) {
  */
 const typeRenderers = {
 	AllLiteral: renderAllLiteral,
+	ArrayType: renderArrayType,
 	BooleanLiteralType: renderLiteral,
 	NameExpression: renderNameExpression,
 	RecordType: renderRecordType,

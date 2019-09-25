@@ -339,11 +339,12 @@ function defaultTypedefRenderer ({section, export: exp}) {
 		outputStr = `${exp ? 'export ' : ''}interface ${section.name} {
 			${section.properties.map(prop => renderParam(prop, renderType)).join(',')}
 		}`;
-	}
-	else if (section.type.name === 'Function') {
+	} else if (section.type.name === 'Function') {
 		const params = section.params.map(prop => renderParam(prop, renderType)).join(', ');
 		const ret = section.returns.length === 0 ? 'void' : renderType(section.returns[0]);
 		outputStr = `${exp ? 'export ' : ''}interface ${section.name} { (${params}): ${ret}; }`;
+	} else if (section.type.type) {
+		outputStr = `${exp ? 'export ' : ''}type ${section.name} = ${renderType(section.type)}`;
 	} else {
 		outputStr = `${exp ? 'export ' : ''}type ${section.name} = ${section.type.name}`;
 	}
