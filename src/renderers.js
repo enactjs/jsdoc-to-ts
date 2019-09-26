@@ -48,8 +48,7 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 	};
 
 	if (!section.tags.filter(isExports).length) {
-		// eslint-disable-next-line no-console
-		console.log(`No @exports found in ${moduleName}`);
+		log.warn(`No @exports found in ${moduleName}`);
 	}
 
 	const body = `
