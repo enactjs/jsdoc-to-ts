@@ -3,7 +3,7 @@
  * Rendering functions and the default set of renderers
  */
 const {escapeClassMember, hasRequiredTag} = require('./utils');
-const {renderDescription} = require("./description");
+const {renderDescription} = require('./description');
 const {renderParam} = require('./params');
 const {renderType, extractTypeImports} = require('./types');
 
@@ -50,37 +50,37 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 
 	const body = `
 		${
-			renderer({section: section.members.static, imports, export: true})
-				.filter(Boolean)
-				.join('\n')
-		}
+	renderer({section: section.members.static, imports, export: true})
+		.filter(Boolean)
+		.join('\n')
+}
 
 		${
-			section.tags
-				.filter(isExports)
-				.map(exportDeclarations(moduleName))
-				.join('')
-		}
+	section.tags
+		.filter(isExports)
+		.map(exportDeclarations(moduleName))
+		.join('')
+}
 	`;
 
 	const header = `
 		// Type definitions for ${section.name}
 
 		${imports.entries.map(entry => {
-			const path = `${importMap && importMap[entry.module] || entry.module}${entry.path ? `/${entry.path}` : ''}`;
-			let spec = '';
+		const path = `${importMap && importMap[entry.module] || entry.module}${entry.path ? `/${entry.path}` : ''}`;
+		let spec = '';
 
-			if (entry.name) {
-				if (entry.all) {
-					spec = `* as ${entry.alias || entry.name}`;
-				} else {
-					const name = entry.alias ? `${entry.name} as ${entry.alias}` : entry.name
-					spec = `{ ${name} }`;
-				}
+		if (entry.name) {
+			if (entry.all) {
+				spec = `* as ${entry.alias || entry.name}`;
+			} else {
+				const name = entry.alias ? `${entry.name} as ${entry.alias}` : entry.name;
+				spec = `{ ${name} }`;
 			}
+		}
 
-			return `import ${spec} from "${path}";`
-		}).join('\n')}
+		return `import ${spec} from "${path}";`;
+	}).join('\n')}
 
 		type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 		type Merge<M, N> = Omit<M, Extract<keyof M, keyof N>> & N;
@@ -156,7 +156,7 @@ const formatFunction = (section, exp, instance, name, templates, params, ret) =>
 			(exp ? 'export ' : '') +
 			(instance ? '' : 'function ') +
 			`${name}${templates}${params}: ${ret};`;
-}
+};
 
 function defaultFunctionRenderer ({section, export: exp = false, instance = false, typeRenderer = renderType}) {
 	let returns = 'void';
@@ -199,10 +199,10 @@ function defaultConstantRenderer ({section, export: exp, renderer}) {
 
 	return `${declaration} {
 		${
-			renderer({section: section.members.static, instance: true})
-				.filter(Boolean)
-				.join('\n')
-		}
+	renderer({section: section.members.static, instance: true})
+		.filter(Boolean)
+		.join('\n')
+}
 	};`;
 }
 
@@ -216,10 +216,10 @@ function renderInterface (name, members, interfaceBase, typeRenderer, imports, o
 
 	return `export interface ${name} ${interfaceBase ? `extends ${interfaceBase}` : ''} {
 		${members.map(member => {
-			const required = hasRequiredTag(member) ? '' : '?';
-			extractTypeImports(member.type, imports);
-			return `${renderDescription(member)}${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
-		}).join('\n')}
+		const required = hasRequiredTag(member) ? '' : '?';
+		extractTypeImports(member.type, imports);
+		return `${renderDescription(member)}${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
+	}).join('\n')}
 	}`;
 }
 
@@ -305,10 +305,10 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 		${renderDescription(section)}
 		export class ${section.name} extends React.Component<${propsInterfaceName} & React.HTMLProps<HTMLElement>> {
 			${
-				renderer({section: funcs, export: false, instance: true})
-					.filter(Boolean)
-					.join('\n')
-			}
+	renderer({section: funcs, export: false, instance: true})
+		.filter(Boolean)
+		.join('\n')
+}
 		}
 	`;
 }
@@ -320,13 +320,13 @@ function defaultClassRenderer ({section, export: exp, renderer}) {
 	${renderDescription(section)}
 	${exp ? 'export ' : ''}declare class ${section.name} {
 		${section.constructorComment ? (
-			`constructor(${section.constructorComment.params.map(prop => renderParam(prop, renderType)).join(', ')});`
-		) : ''}
+		`constructor(${section.constructorComment.params.map(prop => renderParam(prop, renderType)).join(', ')});`
+	) : ''}
 		${
-			renderer({section: section.members.instance, instance: true})
-				.filter(Boolean)
-				.join('\n')
-		}
+	renderer({section: section.members.instance, instance: true})
+		.filter(Boolean)
+		.join('\n')
+}
 	};\n`;
 }
 

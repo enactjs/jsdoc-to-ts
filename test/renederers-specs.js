@@ -8,7 +8,7 @@ const {
 	simpleFunction, simpleFunctionOutput
 } = require('./data');
 
-function log() {};
+function log () {}
 
 describe('renderers', function () {
 
@@ -34,7 +34,7 @@ describe('renderers', function () {
 			let outputStr = '';
 			const output = (str) => (outputStr += str);
 
-			defaultModuleRenderer({section: emptyModule, parent: emptyModule, root: emptyModule, log, output})
+			defaultModuleRenderer({section: emptyModule, parent: emptyModule, root: emptyModule, log, output});
 			const expected = emptyModuleOutput;
 			const actual = outputStr;
 			expect(actual).to.equal(expected);
@@ -46,7 +46,7 @@ describe('renderers', function () {
 			let outputStr = '';
 			const output = (str) => (outputStr += str);
 
-			defaultHocRenderer({section: completeHoc, parent: completeHoc, root: completeHoc, log, output})
+			defaultHocRenderer({section: completeHoc, parent: completeHoc, root: completeHoc, log, output});
 			const expected = completeHocOutput;
 			const actual = outputStr;
 			expect(actual).to.equal(expected);
@@ -58,7 +58,7 @@ describe('renderers', function () {
 			let outputStr = '';
 			const output = (str) => (outputStr += str);
 
-			defaultFunctionRenderer({section: simpleFunction, parent: simpleFunction, root: simpleFunction, log, output})
+			defaultFunctionRenderer({section: simpleFunction, parent: simpleFunction, root: simpleFunction, log, output});
 			const expected = simpleFunctionOutput;
 			const actual = outputStr;
 			expect(actual).to.equal(expected);

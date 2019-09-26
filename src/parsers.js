@@ -29,7 +29,7 @@ function makeParser (
 		return section.filter(typeFilter).map(item => {
 			const type = typeClassifier({section: item, parent: section, root, ...rest});
 			if (!type || !typeRenderers[type]) {
-				log.info(`Skipping unrecognized item ${item.name}`)
+				log.info(`Skipping unrecognized item ${item.name}`);
 				return;
 			}
 
