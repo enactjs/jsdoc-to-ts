@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-shadow
 const expect = require('chai').expect;
 
 const {getDefaultRenderers, defaultModuleRenderer, defaultHocRenderer, defaultFunctionRenderer} = require('../src/renderers');

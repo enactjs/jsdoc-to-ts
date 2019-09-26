@@ -15,7 +15,7 @@ function exportDeclarations (moduleName) {
 	return function (tag) {
 		if (tag.description === moduleName) {
 			return `export default ${tag.description}`;
-		} else if (tag.description.indexOf('default ') == 0) {
+		} else if (tag.description.indexOf('default ') === 0) {
 			const name = tag.description.slice(8);
 			return `export default ${name}`;
 		}
@@ -24,7 +24,7 @@ function exportDeclarations (moduleName) {
 	};
 }
 
-function defaultModuleRenderer ({section, parent, root, importMap, log, renderer, types}) {
+function defaultModuleRenderer ({section, parent, root, importMap, log, renderer}) {
 	if (parent !== root) {
 		log.warn(`Unexpected module ${section.name}`);
 		return;
@@ -45,6 +45,7 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 	};
 
 	if (!section.tags.filter(isExports).length) {
+		// eslint-disable-next-line no-console
 		console.log(`No @exports found in ${moduleName}`);
 	}
 
@@ -230,12 +231,12 @@ function calcPropsBaseName ({imports, section}) {
 	].map(name => {
 		if (name.indexOf(section.memberof) === 0) {
 			// if within the same submodule, no import required
-			return name.replace(/^.*[~\.]/, '') + 'Props';
+			return name.replace(/^.*[~.]/, '') + 'Props';
 		}
 
 		const importMatch = name.match(/(\w+?)\/(\w+)\.(\w+)/i);
 		if (importMatch) {
-			const alias = name.replace(/[\/\.]/g, '_') + 'Props';
+			const alias = name.replace(/[/.]/g, '_') + 'Props';
 			imports.add({
 				module: importMatch[1],
 				path: importMatch[2],

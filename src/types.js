@@ -36,11 +36,11 @@ function renderNameExpression (type) {
 		}
 		const importMatch = type.name.match(/(\w+?)\/(\w+)\.(\w+)/i);
 		if (importMatch) {
-			return type.name.replace(/[\/\.]/g, '_');
+			return type.name.replace(/[/.]/g, '_');
 		} else if (typeMappings[type.name]) {
 			return typeMappings[type.name];
 		} else {
-			return type.name.replace(/^.*[/\.~]/, '');
+			return type.name.replace(/^.*[/.~]/, '');
 		}
 	}
 }
@@ -117,7 +117,7 @@ function renderLiteral (type) {
 	return type.value;
 }
 
-function renderAllLiteral (type) {
+function renderAllLiteral () {
 	return 'any';
 }
 
@@ -151,7 +151,7 @@ function extractTypeImports (type, imports) {
 	if (type.type === 'NameExpression') {
 		const importMatch = type.name.match(/(\w+?)\/(\w+)\.(\w+)/i);
 		if (importMatch) {
-			const alias = type.name.replace(/[\/\.]/g, '_');
+			const alias = type.name.replace(/[/.]/g, '_');
 			imports.add({
 				module: importMatch[1],
 				path: importMatch[2],
