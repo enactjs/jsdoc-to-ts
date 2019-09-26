@@ -53,17 +53,17 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 
 	const body = `
 		${
-	renderer({section: section.members.static, imports, export: true})
-		.filter(Boolean)
-		.join('\n')
-}
+			renderer({section: section.members.static, imports, export: true})
+				.filter(Boolean)
+				.join('\n')
+		}
 
 		${
-	section.tags
-		.filter(isExports)
-		.map(exportDeclarations(moduleName))
-		.join('')
-}
+			section.tags
+				.filter(isExports)
+				.map(exportDeclarations(moduleName))
+				.join('')
+		}
 	`;
 
 	const header = `
