@@ -41,6 +41,9 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 
 			this.entries.push(entry);
 		},
+		isLocal: function (entry) {
+			return entry.indexOf(section.name) === 0;
+		},
 		entries: []
 	};
 

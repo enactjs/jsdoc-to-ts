@@ -151,13 +151,17 @@ function extractTypeImports (type, imports) {
 	if (type.type === 'NameExpression') {
 		const importMatch = type.name.match(/(\w+?)\/(\w+)\.(\w+)/i);
 		if (importMatch) {
-			const alias = type.name.replace(/[/.]/g, '_');
-			imports.add({
-				module: importMatch[1],
-				path: importMatch[2],
-				name: importMatch[3],
-				alias
-			});
+			if (imports.isLocal(type.name)) {
+				type.name = importMatch[3];
+			} else {
+				const alias = type.name.replace(/[/.]/g, '_');
+				imports.add({
+					module: importMatch[1],
+					path: importMatch[2],
+					name: importMatch[3],
+					alias
+				});
+			}
 		}
 	}
 }
