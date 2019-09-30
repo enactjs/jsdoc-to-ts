@@ -36,5 +36,5 @@ function renderDescription (section) {
 }
 
 module.exports = {
-    renderDescription
+	renderDescription
 };

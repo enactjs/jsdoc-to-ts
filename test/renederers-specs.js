@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-shadow
 const expect = require('chai').expect;
 
 const {getDefaultRenderers, defaultModuleRenderer, defaultHocRenderer, defaultFunctionRenderer} = require('../src/renderers');
@@ -8,7 +9,9 @@ const {
 	simpleFunction, simpleFunctionOutput
 } = require('./data');
 
-function log() {};
+function log () {}
+log.warn = () => {};
+log.info = () => {};
 
 describe('renderers', function () {
 
@@ -31,36 +34,26 @@ describe('renderers', function () {
 
 	describe('defaultModuleRenderer', function () {
 		it('should render only header if no members', function () {
-			let outputStr = '';
-			const output = (str) => (outputStr += str);
+			const renderer = () => [];
 
-			defaultModuleRenderer({section: emptyModule, parent: emptyModule, root: emptyModule, log, output})
 			const expected = emptyModuleOutput;
-			const actual = outputStr;
+			const actual = defaultModuleRenderer({section: emptyModule, parent: emptyModule, root: emptyModule, log, renderer});
 			expect(actual).to.equal(expected);
 		});
 	});
 
 	describe('defaultHocRenderer', function () {
 		it('should a complete hoc', function () {
-			let outputStr = '';
-			const output = (str) => (outputStr += str);
-
-			defaultHocRenderer({section: completeHoc, parent: completeHoc, root: completeHoc, log, output})
 			const expected = completeHocOutput;
-			const actual = outputStr;
+			const actual = defaultHocRenderer({section: completeHoc, parent: completeHoc, root: completeHoc, log});
 			expect(actual).to.equal(expected);
 		});
 	});
 
 	describe('defaultFunctionRenderer', function () {
 		it('should render a simple function definition', function () {
-			let outputStr = '';
-			const output = (str) => (outputStr += str);
-
-			defaultFunctionRenderer({section: simpleFunction, parent: simpleFunction, root: simpleFunction, log, output})
 			const expected = simpleFunctionOutput;
-			const actual = outputStr;
+			const actual = defaultFunctionRenderer({section: simpleFunction, parent: simpleFunction, root: simpleFunction, log});
 			expect(actual).to.equal(expected);
 		});
 	});

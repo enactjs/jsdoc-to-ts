@@ -3,7 +3,7 @@
  * Rendering functions and the default set of renderers
  */
 const {escapeClassMember, hasRequiredTag} = require('./utils');
-const {renderDescription} = require("./description");
+const {renderDescription} = require('./description');
 const {renderParam} = require('./params');
 const {renderType, extractTypeImports} = require('./types');
 
@@ -15,7 +15,7 @@ function exportDeclarations (moduleName) {
 	return function (tag) {
 		if (tag.description === moduleName) {
 			return `export default ${tag.description}`;
-		} else if (tag.description.indexOf('default ') == 0) {
+		} else if (tag.description.indexOf('default ') === 0) {
 			const name = tag.description.slice(8);
 			return `export default ${name}`;
 		}
@@ -24,7 +24,7 @@ function exportDeclarations (moduleName) {
 	};
 }
 
-function defaultModuleRenderer ({section, parent, root, importMap, log, renderer, types}) {
+function defaultModuleRenderer ({section, parent, root, importMap, log, renderer}) {
 	if (parent !== root) {
 		log.warn(`Unexpected module ${section.name}`);
 		return;
@@ -41,11 +41,14 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 
 			this.entries.push(entry);
 		},
+		isLocal: function (entry) {
+			return entry.indexOf(section.name) === 0;
+		},
 		entries: []
 	};
 
 	if (!section.tags.filter(isExports).length) {
-		console.log(`No @exports found in ${moduleName}`);
+		log.warn(`No @exports found in ${moduleName}`);
 	}
 
 	const body = `
@@ -74,12 +77,12 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 				if (entry.all) {
 					spec = `* as ${entry.alias || entry.name}`;
 				} else {
-					const name = entry.alias ? `${entry.name} as ${entry.alias}` : entry.name
+					const name = entry.alias ? `${entry.name} as ${entry.alias}` : entry.name;
 					spec = `{ ${name} }`;
 				}
 			}
 
-			return `import ${spec} from "${path}";`
+			return `import ${spec} from "${path}";`;
 		}).join('\n')}
 
 		type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
@@ -156,7 +159,7 @@ const formatFunction = (section, exp, instance, name, templates, params, ret) =>
 			(exp ? 'export ' : '') +
 			(instance ? '' : 'function ') +
 			`${name}${templates}${params}: ${ret};`;
-}
+};
 
 function defaultFunctionRenderer ({section, export: exp = false, instance = false, typeRenderer = renderType}) {
 	let returns = 'void';
@@ -230,12 +233,12 @@ function calcPropsBaseName ({imports, section}) {
 	].map(name => {
 		if (name.indexOf(section.memberof) === 0) {
 			// if within the same submodule, no import required
-			return name.replace(/^.*[~\.]/, '') + 'Props';
+			return name.replace(/^.*[~.]/, '') + 'Props';
 		}
 
 		const importMatch = name.match(/(\w+?)\/(\w+)\.(\w+)/i);
 		if (importMatch) {
-			const alias = name.replace(/[\/\.]/g, '_') + 'Props';
+			const alias = name.replace(/[/.]/g, '_') + 'Props';
 			imports.add({
 				module: importMatch[1],
 				path: importMatch[2],
@@ -317,9 +320,9 @@ exports.defaultComponentRenderer = defaultComponentRenderer;
 
 function defaultClassRenderer ({section, export: exp, renderer}) {
 	return `
-	${renderDescription(section)}
-	${exp ? 'export ' : ''}declare class ${section.name} {
-		${section.constructorComment ? (
+		${renderDescription(section)}
+		${exp ? 'export ' : ''}declare class ${section.name} {
+			${section.constructorComment ? (
 			`constructor(${section.constructorComment.params.map(prop => renderParam(prop, renderType)).join(', ')});`
 		) : ''}
 		${
@@ -339,11 +342,12 @@ function defaultTypedefRenderer ({section, export: exp}) {
 		outputStr = `${exp ? 'export ' : ''}interface ${section.name} {
 			${section.properties.map(prop => renderParam(prop, renderType)).join(',')}
 		}`;
-	}
-	else if (section.type.name === 'Function') {
+	} else if (section.type.name === 'Function') {
 		const params = section.params.map(prop => renderParam(prop, renderType)).join(', ');
 		const ret = section.returns.length === 0 ? 'void' : renderType(section.returns[0]);
 		outputStr = `${exp ? 'export ' : ''}interface ${section.name} { (${params}): ${ret}; }`;
+	} else if (section.type.type) {
+		outputStr = `${exp ? 'export ' : ''}type ${section.name} = ${renderType(section.type)}`;
 	} else {
 		outputStr = `${exp ? 'export ' : ''}type ${section.name} = ${section.type.name}`;
 	}

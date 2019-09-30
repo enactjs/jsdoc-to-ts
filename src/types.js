@@ -36,11 +36,11 @@ function renderNameExpression (type) {
 		}
 		const importMatch = type.name.match(/(\w+?)\/(\w+)\.(\w+)/i);
 		if (importMatch) {
-			return type.name.replace(/[\/\.]/g, '_');
+			return type.name.replace(/[/.]/g, '_');
 		} else if (typeMappings[type.name]) {
 			return typeMappings[type.name];
 		} else {
-			return type.name.replace(/^.*[/\.~]/, '');
+			return type.name.replace(/^.*[/.~]/, '');
 		}
 	}
 }
@@ -94,6 +94,17 @@ function renderRecordType (type, templates) {
 	}
 }
 
+function renderArrayType (type, templates) {
+	if (type.elements && type.elements.length) {
+		const entries = type.elements.map(
+			element => renderType(element, templates)
+		);
+		return `[${entries.join(', ')}]`;
+	} else {
+		return 'Array';
+	}
+}
+
 function renderRestType (type) {
 	return `${renderType(type.expression)}[]`;
 }
@@ -106,7 +117,7 @@ function renderLiteral (type) {
 	return type.value;
 }
 
-function renderAllLiteral (type) {
+function renderAllLiteral () {
 	return 'any';
 }
 
@@ -119,6 +130,7 @@ function renderStringLiteral (type) {
  */
 const typeRenderers = {
 	AllLiteral: renderAllLiteral,
+	ArrayType: renderArrayType,
 	BooleanLiteralType: renderLiteral,
 	NameExpression: renderNameExpression,
 	RecordType: renderRecordType,
@@ -139,13 +151,17 @@ function extractTypeImports (type, imports) {
 	if (type.type === 'NameExpression') {
 		const importMatch = type.name.match(/(\w+?)\/(\w+)\.(\w+)/i);
 		if (importMatch) {
-			const alias = type.name.replace(/[\/\.]/g, '_');
-			imports.add({
-				module: importMatch[1],
-				path: importMatch[2],
-				name: importMatch[3],
-				alias
-			});
+			if (imports.isLocal(type.name)) {
+				type.name = importMatch[3];
+			} else {
+				const alias = type.name.replace(/[/.]/g, '_');
+				imports.add({
+					module: importMatch[1],
+					path: importMatch[2],
+					name: importMatch[3],
+					alias
+				});
+			}
 		}
 	}
 }

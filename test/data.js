@@ -474,11 +474,18 @@ exports.emptyModule = {
 };
 
 exports.emptyModuleOutput =
-`// Type definitions for ui/A11yDecorator
+`
+		// Type definitions for ui/A11yDecorator
 
-import * as React from "react";
+\t\t
 
-`;
+		type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
+		type Merge<M, N> = Omit<M, Extract<keyof M, keyof N>> & N;
+\t
+\t\t
+
+\t\t
+\t`;
 
 exports.completeHoc = 				{
 	'description': {
@@ -864,20 +871,7 @@ exports.completeHoc = 				{
 	'namespace': 'ui/A11yDecoratorA11yDecorator'
 };
 
-exports.completeHocOutput =
-`export interface A11yDecoratorConfig {
-	prop?: string;
-}
-
-export interface A11yDecoratorProps {
-	aria-label?: string;
-	accessibilityHint?: string;
-	accessibilityPreHint?: string;
-}
-
-export function A11yDecorator<P extends A11yDecoratorProps>(config: A11yDecoratorConfig, Component: React.ComponentType<P>): React.Component<P & A11yDecoratorProps>;
-
-`;
+exports.completeHocOutput = 'export interface A11yDecoratorConfig extends Object {\n\t\t/**\n * Configures the prop for the source of the component\'s content\n */\nprop?: string;\n\t}\n\t\texport interface A11yDecoratorProps  {\n\t\t/**\n * Sets the value of the  `aria-label`  attribute for the wrapped component.\n */\n\'aria-label\'?: string;\n/**\n * Sets the hint text to be read after the content.\n */\naccessibilityHint?: string;\n/**\n * Sets the hint text to be read before the content.\n */\naccessibilityPreHint?: string;\n\t}\n\t\texport function A11yDecorator<P>(\n\t\t\tconfig: A11yDecoratorConfig,\n\t\t\tComponent: React.ComponentType<P> | string\n\t\t): React.ComponentType<P & A11yDecoratorProps>;\n\t\t\n\t\t\texport function A11yDecorator<P>(\n\t\t\t\tComponent: React.ComponentType<P> | string\n\t\t\t): React.ComponentType<P & A11yDecoratorProps>;\n\t\t\n\t';
 
 exports.simpleFunction = {
 	'description': {
@@ -992,4 +986,8 @@ exports.simpleFunction = {
 	'namespace': 'core/utilcap'
 };
 
-exports.simpleFunctionOutput = 'export function cap(string): string;\n\n';
+exports.simpleFunctionOutput =
+`/**
+ * Capitalizes a given string (not locale-aware).
+ */
+function cap(str: string): string;`;
