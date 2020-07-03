@@ -306,7 +306,7 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 
 	return `${propsInterface}
 		${renderDescription(section)}
-		export class ${section.name} extends React.Component<${propsInterfaceName} & React.HTMLProps<HTMLElement>> {
+		export class ${section.name} extends React.Component<Merge<React.HTMLProps<HTMLElement>, ${propsInterfaceName}> {
 			${
 				renderer({section: funcs, export: false, instance: true})
 					.filter(Boolean)
