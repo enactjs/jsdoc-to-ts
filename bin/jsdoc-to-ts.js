@@ -47,7 +47,7 @@ if (opts.help) displayHelp();
 jsdocToTs({
 	package: opts._[0] || '.',
 	output: fs.writeFileSync,
-	ignore: ['node_modules', 'ilib', 'build'],
+	ignore: ['node_modules', 'ilib', 'build', 'dist', 'samples', 'coverage', 'tests'],
 	importMap: {
 		core: '@enact/core',
 		ui: '@enact/ui',
