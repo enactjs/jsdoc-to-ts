@@ -148,7 +148,7 @@ function renderType (type, templates) {
 }
 
 function extractTypeImports (type, imports) {
-	if (type.type === 'NameExpression') {
+	if (type && type.type === 'NameExpression') {
 		const importMatch = type.name.match(/(\w+?)\/(\w+)\.(\w+)/i);
 		if (importMatch) {
 			if (imports.isLocal(type.name)) {

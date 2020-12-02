@@ -36,6 +36,7 @@ function parse ({path: modulePath, files, format, importMap, output}) {
 		}
 	).catch((err) => {
 		log.error(`Unable to process ${modulePath}: ${err}`);
+		log.error(err.stack);
 	});
 }
 
