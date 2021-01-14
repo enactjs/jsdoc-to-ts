@@ -1,5 +1,7 @@
 # Converts JSDoc comments into TypeScript d.ts files
 
+Note. It's an experimental module.
+
 ## Usage
 
 Assuming this directory is a peer of the Enact source and you want to write this into an installed (from npm) version of enact:
