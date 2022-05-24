@@ -28,16 +28,16 @@
   },
   "dependencies": {
     "documentation": "^13.2.5",
-    "glob": "^7.2.0",
-    "jsonata": "^1.8.5",
+    "glob": "^8.0.3",
+    "jsonata": "^1.8.6",
     "loglevel": "^1.8.0",
-    "minimist": "^1.2.5",
-    "prettier": "^2.5.1"
+    "minimist": "^1.2.6",
+    "prettier": "^2.6.2"
   },
   "devDependencies": {
-    "chai": "^4.3.4",
-    "eslint-config-enact-proxy": "^1.0.2",
-    "mocha": "^9.1.3",
-    "react": "^17.0.2"
+    "chai": "^4.3.6",
+    "eslint-config-enact-proxy": "^1.0.4",
+    "mocha": "^10.0.0",
+    "react": "^18.0.0"
   }
 }
