@@ -35,31 +35,26 @@ describe('renderers', function () {
 	describe('defaultModuleRenderer', function () {
 		it('should render only header if no members', function () {
 			const renderer = () => [];
-			const view = defaultModuleRenderer({section: emptyModule, parent: emptyModule, root: emptyModule, log, renderer});
 
 			const expected = emptyModuleOutput;
-			const actual = view;
-			expect(actual).equal(expected);
+			const view = defaultModuleRenderer({section: emptyModule, parent: emptyModule, root: emptyModule, log, renderer});
+			expect(view).equal(expected);
 		});
 	});
 
 	describe('defaultHocRenderer', function () {
 		it('should a complete hoc', function () {
-			const view = defaultHocRenderer({section: completeHoc, parent: completeHoc, root: completeHoc, log});
-
 			const expected = completeHocOutput;
-			const actual = view;
-			expect(actual).equal(expected);
+			const view = defaultHocRenderer({section: completeHoc, parent: completeHoc, root: completeHoc, log});
+			expect(view).equal(expected);
 		});
 	});
 
 	describe('defaultFunctionRenderer', function () {
 		it('should render a simple function definition', function () {
-			const view = defaultFunctionRenderer({section: simpleFunction, parent: simpleFunction, root: simpleFunction, log});
-
 			const expected = simpleFunctionOutput;
-			const actual = view;
-			expect(actual).equal(expected);
+			const view = defaultFunctionRenderer({section: simpleFunction, parent: simpleFunction, root: simpleFunction, log});
+			expect(view).equal(expected);
 		});
 	});
 });
