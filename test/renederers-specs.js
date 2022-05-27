@@ -19,16 +19,16 @@ describe('renderers', function () {
 		it('should return an object', function () {
 			const expected = 'object';
 			const actual = typeof getDefaultRenderers();
-			expect(actual).to.equal(expected);
+			expect(actual).equal(expected);
 		});
 
 		it('should allow customizing the object', function () {
 			const overrideFunc = () => {};
-			const renderer = getDefaultRenderers({module: overrideFunc});
+			const view = getDefaultRenderers({module: overrideFunc});
 
 			const expected = overrideFunc;
-			const actual = renderer.module;
-			expect(actual).to.equal(expected);
+			const actual = view.module;
+			expect(actual).equal(expected);
 		});
 	});
 
@@ -37,24 +37,24 @@ describe('renderers', function () {
 			const renderer = () => [];
 
 			const expected = emptyModuleOutput;
-			const actual = defaultModuleRenderer({section: emptyModule, parent: emptyModule, root: emptyModule, log, renderer});
-			expect(actual).to.equal(expected);
+			const view = defaultModuleRenderer({section: emptyModule, parent: emptyModule, root: emptyModule, log, renderer});
+			expect(view).equal(expected);
 		});
 	});
 
 	describe('defaultHocRenderer', function () {
 		it('should a complete hoc', function () {
 			const expected = completeHocOutput;
-			const actual = defaultHocRenderer({section: completeHoc, parent: completeHoc, root: completeHoc, log});
-			expect(actual).to.equal(expected);
+			const view = defaultHocRenderer({section: completeHoc, parent: completeHoc, root: completeHoc, log});
+			expect(view).equal(expected);
 		});
 	});
 
 	describe('defaultFunctionRenderer', function () {
 		it('should render a simple function definition', function () {
 			const expected = simpleFunctionOutput;
-			const actual = defaultFunctionRenderer({section: simpleFunction, parent: simpleFunction, root: simpleFunction, log});
-			expect(actual).to.equal(expected);
+			const view = defaultFunctionRenderer({section: simpleFunction, parent: simpleFunction, root: simpleFunction, log});
+			expect(view).equal(expected);
 		});
 	});
 });
