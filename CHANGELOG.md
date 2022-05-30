@@ -2,8 +2,8 @@
 
 ## unreleased
 
-* Updated dependencies includes React 18.
 * Updated the version of package lock file to v2.
+* Updated dependencies includes React 18.
 
 ## [0.1.1] (December 28, 2021)
 
