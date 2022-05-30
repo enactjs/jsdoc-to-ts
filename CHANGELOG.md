@@ -1,6 +1,6 @@
 # Change Log
 
-## unreleased
+## [unreleased]
 
 * Updated the version of package lock file to v2.
 * Updated dependencies includes React 18.
