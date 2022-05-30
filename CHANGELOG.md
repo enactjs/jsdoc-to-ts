@@ -9,6 +9,6 @@
 
 * Fixed security vulnerabilities.
 
-## [0.1.0]
+## [0.1.0] (January 15, 2021)
 
 * Initial release.
