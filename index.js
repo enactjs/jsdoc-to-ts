@@ -13,7 +13,7 @@ function isScript (filePath) {
 }
 
 async function parse ({path: modulePath, files, format, importMap, output}) {
-	const {build} = await import('documentation');
+	const documentation = await import('documentation');
 	const encodeModule = makeParser();
 
 	if (!files || files.length === 0) {
@@ -22,7 +22,7 @@ async function parse ({path: modulePath, files, format, importMap, output}) {
 	}
 
 	log.info(`Parsing ${modulePath} ...`);
-	build(files, {shallow: true}).then(
+	documentation.build(files, {shallow: true}).then(
 		(root) => {
 			let result = encodeModule({root, section: root, parent: root, importMap, log}).join('\n');
 			const firstNamedEntry = root.find(entry => entry.name);
