@@ -1,5 +1,9 @@
 # Change Log
 
+## unreleased
+
+* Fixed security vulnerabilities with API changes.
+
 ## [0.1.2] (May 31, 2022)
 
 * Updated the `lockfileVersion` of package-lock file to v2.
