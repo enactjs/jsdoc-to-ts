@@ -1,7 +1,6 @@
 const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
-const documentation = require('documentation');
 const log = require('loglevel');
 const prettier = require('prettier');
 
@@ -13,7 +12,8 @@ function isScript (filePath) {
 	return filePath.match(sourceExtension) != null;
 }
 
-function parse ({path: modulePath, files, format, importMap, output}) {
+async function parse ({path: modulePath, files, format, importMap, output}) {
+	const {build} = await import('./node_modules/documentation/src/index.js');
 	const encodeModule = makeParser();
 
 	if (!files || files.length === 0) {
@@ -22,7 +22,7 @@ function parse ({path: modulePath, files, format, importMap, output}) {
 	}
 
 	log.info(`Parsing ${modulePath} ...`);
-	documentation.build(files, {shallow: true}).then(
+	build(files, {shallow: true}).then(
 		(root) => {
 			let result = encodeModule({root, section: root, parent: root, importMap, log}).join('\n');
 			const firstNamedEntry = root.find(entry => entry.name);
