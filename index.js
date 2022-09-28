@@ -13,7 +13,7 @@ function isScript (filePath) {
 }
 
 async function parse ({path: modulePath, files, format, importMap, output}) {
-	const {build} = await import('./node_modules/documentation/src/index.js');
+	const {build} = await import('documentation');
 	const encodeModule = makeParser();
 
 	if (!files || files.length === 0) {
