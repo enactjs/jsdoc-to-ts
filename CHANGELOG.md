@@ -2,7 +2,7 @@
 
 ## unreleased
 
-* Fixed security vulnerabilities with API changes.
+* Fixed security vulnerabilities.
 
 ## [0.1.2] (May 31, 2022)
 
