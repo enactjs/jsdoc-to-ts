@@ -31,13 +31,13 @@
     "glob": "^8.0.3",
     "jsonata": "^1.8.6",
     "loglevel": "^1.8.0",
-    "minimist": "^1.2.6",
+    "minimist": "^1.2.7",
     "prettier": "^2.7.1"
   },
   "devDependencies": {
     "chai": "^4.3.6",
     "eslint-config-enact-proxy": "^1.0.5",
-    "mocha": "^10.0.0",
+    "mocha": "^10.1.0",
     "react": "^18.2.0"
   }
 }
