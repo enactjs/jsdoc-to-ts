@@ -6,7 +6,7 @@
  * @module filters
  */
 
-function defaultTypeFilter () {
+export function defaultTypeFilter () {
 	return true;
 }
-exports.defaultTypeFilter = defaultTypeFilter;
+// exports.defaultTypeFilter = defaultTypeFilter;

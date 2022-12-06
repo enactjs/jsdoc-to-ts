@@ -1,10 +1,11 @@
-const fs = require('fs');
-const glob = require('glob');
-const path = require('path');
-const log = require('loglevel');
-const prettier = require('prettier');
+import fs from 'fs'// const fs = require('fs');
+import glob from 'glob'// const glob = require('glob');
+import path from 'path'// const path = require('path');
+import {build} from 'documentation'// const documentation = require('documentation');
+import log from 'loglevel'// const log = require('loglevel');
+import prettier from 'prettier'// const prettier = require('prettier');
 
-const {makeParser} = require('./src/parsers');
+import {makeParser} from './src/parsers.js'// const {makeParser} = require('./src/parsers');
 
 const sourceExtension = /\.jsx?$/i;
 
@@ -12,8 +13,7 @@ function isScript (filePath) {
 	return filePath.match(sourceExtension) != null;
 }
 
-async function parse ({path: modulePath, files, format, importMap, output}) {
-	const documentation = await import('documentation');
+function parse ({path: modulePath, files, format, importMap, output}) {
 	const encodeModule = makeParser();
 
 	if (!files || files.length === 0) {
@@ -22,7 +22,7 @@ async function parse ({path: modulePath, files, format, importMap, output}) {
 	}
 
 	log.info(`Parsing ${modulePath} ...`);
-	documentation.build(files, {shallow: true}).then(
+	build(files, {shallow: true}).then(
 		(root) => {
 			let result = encodeModule({root, section: root, parent: root, importMap, log}).join('\n');
 			const firstNamedEntry = root.find(entry => entry.name);
@@ -73,7 +73,7 @@ function isRequired (name) {
 	throw new Error(`${name} is a required argument`);
 }
 
-function main ({
+export default function main ({
 	output = isRequired('output'),
 	ignore = ['node_modules', 'build', 'dist', 'coverage'],
 	package: base = isRequired('package'),
@@ -101,5 +101,3 @@ function main ({
 		});
 	});
 }
-
-module.exports = main;

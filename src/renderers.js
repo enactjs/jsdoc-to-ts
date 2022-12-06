@@ -2,10 +2,10 @@
 /**
  * Rendering functions and the default set of renderers
  */
-const {escapeClassMember, hasRequiredTag} = require('./utils');
-const {renderDescription} = require('./description');
-const {renderParam} = require('./params');
-const {renderType, extractTypeImports} = require('./types');
+import {escapeClassMember, hasRequiredTag} from './utils.js'//const {escapeClassMember, hasRequiredTag} = require('./utils');
+import {renderDescription} from './description.js'//const {renderDescription} = require('./description');
+import {renderParam} from './params.js'//const {renderParam} = require('./params');
+import {renderType, extractTypeImports} from './types.js'//const {renderType, extractTypeImports} = require('./types');
 
 function isExports (tag) {
 	return tag.title === 'exports';
@@ -92,7 +92,7 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 	return `${header}${body}`;
 }
 
-exports.defaultModuleRenderer = defaultModuleRenderer;
+// exports.defaultModuleRenderer = defaultModuleRenderer;
 
 function uniq (arr) {
 	return arr.reduce((r, v) => {
@@ -192,7 +192,7 @@ function defaultFunctionRenderer ({section, export: exp = false, instance = fals
 	return formatFunction(section, exp, instance, section.name, templates, parametersOutput, returns);
 }
 
-exports.defaultFunctionRenderer = defaultFunctionRenderer;
+// exports.defaultFunctionRenderer = defaultFunctionRenderer;
 
 function defaultConstantRenderer ({section, export: exp, renderer}) {
 	const declaration = `${renderDescription(section)}${exp ? 'export ' : ''}declare const ${section.name}:`;
@@ -209,7 +209,7 @@ function defaultConstantRenderer ({section, export: exp, renderer}) {
 	};`;
 }
 
-exports.defaultConstantRenderer = defaultConstantRenderer;
+// exports.defaultConstantRenderer = defaultConstantRenderer;
 
 function renderInterface (name, members, interfaceBase, typeRenderer, imports, omits) {
 	if (interfaceBase && omits && omits.length) {
@@ -286,7 +286,7 @@ function defaultHocRenderer ({section, imports, typeRenderer = renderType}) {
 	`;
 }
 
-exports.defaultHocRenderer = defaultHocRenderer;
+// exports.defaultHocRenderer = defaultHocRenderer;
 
 // TODO: Add some hinting so we can derive the proper HTML Element to base props on (e.g. Input -> HTMLInputElement)
 function defaultComponentRenderer ({section, renderer, imports, typeRenderer = renderType}) {
@@ -316,7 +316,7 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 	`;
 }
 
-exports.defaultComponentRenderer = defaultComponentRenderer;
+// exports.defaultComponentRenderer = defaultComponentRenderer;
 
 function defaultClassRenderer ({section, export: exp, renderer}) {
 	return `
@@ -333,7 +333,7 @@ function defaultClassRenderer ({section, export: exp, renderer}) {
 	};\n`;
 }
 
-exports.defaultClassRenderer = defaultClassRenderer;
+// exports.defaultClassRenderer = defaultClassRenderer;
 
 function defaultTypedefRenderer ({section, export: exp}) {
 	let outputStr;
@@ -355,7 +355,7 @@ function defaultTypedefRenderer ({section, export: exp}) {
 	return `${renderDescription(section)}${outputStr}`;
 }
 
-exports.defaultTypedefRenderer = defaultTypedefRenderer;
+// exports.defaultTypedefRenderer = defaultTypedefRenderer;
 
 const defaultRenderers = {
 	'class': defaultClassRenderer,
@@ -368,8 +368,8 @@ const defaultRenderers = {
 	'member': defaultConstantRenderer
 };
 
-function getDefaultRenderers (overrides = {}) {
+export function getDefaultRenderers (overrides = {}) {
 	return Object.assign({}, defaultRenderers, overrides);
 }
 
-exports.getDefaultRenderers = getDefaultRenderers;
+// exports.getDefaultRenderers = getDefaultRenderers;
