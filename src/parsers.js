@@ -26,8 +26,11 @@ function makeParser (
 	return function parser ({section, root, log, typedefs = [], ...rest}) {
 		if (!Array.isArray(section)) return [];
 
+		console.log(console.log(JSON.stringify(section.filter(typeFilter))))
 		return section.filter(typeFilter).map(item => {
 			const type = typeClassifier({section: item, parent: section, root, ...rest});
+			//console.log(type);
+			//console.log(typeRenderers[type]);
 			if (!type || !typeRenderers[type]) {
 				log.info(`Skipping unrecognized item ${item.name}`);
 				return;

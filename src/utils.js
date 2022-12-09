@@ -39,6 +39,20 @@ const hasComponentTag = (member) => {
 };
 exports.hasComponentTag = hasComponentTag;
 
+/**
+ * Checks member for a 'static' tag
+ *
+ * @param {Object} member A property definition
+ * @returns {Boolean}
+ */
+const hasStaticTag = (member) => {
+	// Find any tag field whose `title` is 'required' (won't be there if not required)
+	const expression = "$[title='static']";
+	const result = jsonata(expression).evaluate(member.tags);
+	return !!result;
+};
+exports.hasStaticTag = hasStaticTag;
+
 const escapeClassMember = (member) => {
 	return member.match(/-/) ? `'${member}'` : member;
 };

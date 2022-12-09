@@ -29,7 +29,7 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 		log.warn(`Unexpected module ${section.name}`);
 		return;
 	}
-
+  //console.log(section);
 	const moduleName = section.name.replace(/^.*\//g, '');
 	const imports = {
 		add: function (entry) {
@@ -292,7 +292,8 @@ exports.defaultHocRenderer = defaultHocRenderer;
 function defaultComponentRenderer ({section, renderer, imports, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const funcs = section.members.instance.filter(member => member.kind === 'function');
-
+	// console.log(props)
+	// console.log(funcs)
 	const omits = section.tags.reduce((res, tag) => tag.title === 'omit' ? res.concat(tag.description) : res, []);
 	const propsBase = calcPropsBaseName({imports, section});
 	const propsInterfaceName = `${section.name}Props`;
@@ -303,7 +304,7 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 		name: 'React',
 		all: true
 	});
-
+  // console.log(renderer({section: funcs, export: false, instance: true}))
 	return `${propsInterface}
 		${renderDescription(section)}
 		export class ${section.name} extends React.Component<Merge<React.HTMLProps<HTMLElement>, ${propsInterfaceName}>> {
@@ -365,7 +366,8 @@ const defaultRenderers = {
 	'component': defaultComponentRenderer,
 	'hoc': defaultHocRenderer,
 	'typedef': defaultTypedefRenderer,
-	'member': defaultConstantRenderer
+	'member': defaultConstantRenderer,
+	'static': defaultConstantRenderer
 };
 
 function getDefaultRenderers (overrides = {}) {

@@ -4,7 +4,7 @@
  * @module classifiers
  */
 
-const {hasComponentTag, hasHOCTag} = require('./utils');
+const {hasComponentTag, hasHOCTag, hasStaticTag} = require('./utils');
 
 function defaultTypeClassifier ({section}) {
 	const kind = section.kind;
@@ -12,6 +12,11 @@ function defaultTypeClassifier ({section}) {
 	// Check for HOC
 	if (hasHOCTag(section)) {
 		return 'hoc';
+	}
+
+	// Check for @static
+	if (hasStaticTag(section)) {
+		return 'static';
 	}
 
 	// Check for @ui

@@ -24,6 +24,7 @@ async function parse ({path: modulePath, files, format, importMap, output}) {
 	log.info(`Parsing ${modulePath} ...`);
 	documentation.build(files, {shallow: true}).then(
 		(root) => {
+		//	console.log(root[0].members.static)
 			let result = encodeModule({root, section: root, parent: root, importMap, log}).join('\n');
 			const firstNamedEntry = root.find(entry => entry.name);
 			let moduleName = firstNamedEntry ? firstNamedEntry.name : '';
