@@ -321,8 +321,8 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 					.filter(Boolean)
 					.join('\n')
 			}
+			${staticMembersDescription}
 		}
-		${staticMembersDescription}
 	`;
 }
 
