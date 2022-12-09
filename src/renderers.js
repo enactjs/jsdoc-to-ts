@@ -298,13 +298,21 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 	const propsBase = calcPropsBaseName({imports, section});
 	const propsInterfaceName = `${section.name}Props`;
 	const propsInterface = renderInterface(propsInterfaceName, props, propsBase, typeRenderer, imports, omits);
+	let staticMembersDescriptionArray = [], staticMembersDescription = '';
 
 	imports.add({
 		module: 'react',
 		name: 'React',
 		all: true
 	});
-  // console.log(renderer({section: funcs, export: false, instance: true}))
+	console.log(section.members.static.length);
+	if(section.members.static.length > 0) {
+		for(let i=0; i<section.members.static.length; i++) {
+			staticMembersDescriptionArray.push(renderDescription(section.members.static[i]));
+		}
+		staticMembersDescription = staticMembersDescriptionArray.reduce((acc, current) => acc + current + '\n')
+		console.log(staticMembersDescription)
+	}
 	return `${propsInterface}
 		${renderDescription(section)}
 		export class ${section.name} extends React.Component<Merge<React.HTMLProps<HTMLElement>, ${propsInterfaceName}>> {
@@ -314,6 +322,7 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 					.join('\n')
 			}
 		}
+		${staticMembersDescription}
 	`;
 }
 
