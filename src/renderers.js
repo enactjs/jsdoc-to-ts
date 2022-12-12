@@ -308,10 +308,11 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 	console.log(section.members.static.length);
 	if(section.members.static.length > 0) {
 		for(let i=0; i<section.members.static.length; i++) {
-			staticMembersDescriptionArray.push(renderDescription(section.members.static[i]));
+			const tagName = section.members.static[i].tags.reduce((res, tag) => tag.title === 'name' ? res + tag.name : res, []);
+			const linkName = section.members.static[i].description.children[0].children.reduce((res, tag) => tag.type === 'link' ? res + tag.url.split('.')[1] : res, []);
+			staticMembersDescriptionArray.push(renderDescription(section.members.static[i]) + linkName + ' : ' + tagName + '\n\n');
 		}
 		staticMembersDescription = staticMembersDescriptionArray.reduce((acc, current) => acc + current + '\n')
-		console.log(staticMembersDescription)
 	}
 	return `${propsInterface}
 		${renderDescription(section)}
@@ -375,8 +376,7 @@ const defaultRenderers = {
 	'component': defaultComponentRenderer,
 	'hoc': defaultHocRenderer,
 	'typedef': defaultTypedefRenderer,
-	'member': defaultConstantRenderer,
-	'static': defaultConstantRenderer
+	'member': defaultConstantRenderer
 };
 
 function getDefaultRenderers (overrides = {}) {

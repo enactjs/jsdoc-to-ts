@@ -2,14 +2,13 @@
 function joinValues (node) {
 	if (!node) return '';
 
-	let v = node.children ? node.children.map(joinValues).join(' ') : node.value || '';
+	let v = node.children ? node.children.map(joinValues).join('') : node.value || '';
 
 	switch (node.type) {
 		case 'link':
-			console.log("hitting link type")
 			// TODO: Ignoring link contents for now because often they duplicate the linkReference.
 			// Unfortunately, if there isn't a linkReference, the link is dropped altogether
-			return '';
+			return v;
 		case 'listItem':
 			// Often, listItem will contain a paragraph node which will prepend a newline and * so
 			// this strips that off if it exists
