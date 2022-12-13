@@ -144,8 +144,6 @@ function renderType (type, templates) {
 	if (!type || !typeRenderers[type.type]) {
 		return 'any';
 	}
-	// console.log(type.type);
-	// console.log(typeRenderers[type.type](type, templates));
 	return typeRenderers[type.type](type, templates);
 }
 

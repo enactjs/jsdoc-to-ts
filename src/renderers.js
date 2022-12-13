@@ -29,7 +29,7 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 		log.warn(`Unexpected module ${section.name}`);
 		return;
 	}
-  //console.log(section);
+
 	const moduleName = section.name.replace(/^.*\//g, '');
 	const imports = {
 		add: function (entry) {
@@ -292,8 +292,6 @@ exports.defaultHocRenderer = defaultHocRenderer;
 function defaultComponentRenderer ({section, renderer, imports, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const funcs = section.members.instance.filter(member => member.kind === 'function');
-	// console.log(props)
-	// console.log(funcs)
 	const omits = section.tags.reduce((res, tag) => tag.title === 'omit' ? res.concat(tag.description) : res, []);
 	const propsBase = calcPropsBaseName({imports, section});
 	const propsInterfaceName = `${section.name}Props`;
@@ -305,7 +303,7 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 		name: 'React',
 		all: true
 	});
-	console.log(section.members.static.length);
+
 	if(section.members.static.length > 0) {
 		for(let i=0; i<section.members.static.length; i++) {
 			const tagName = section.members.static[i].tags.reduce((res, tag) => tag.title === 'name' ? res + tag.name : res, []);

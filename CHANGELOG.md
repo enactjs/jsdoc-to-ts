@@ -2,6 +2,7 @@
 
 ## unreleased
 
+* Added the rendering of static members for a component.
 * Fixed security vulnerabilities.
 
 ## [0.1.2] (May 31, 2022)
