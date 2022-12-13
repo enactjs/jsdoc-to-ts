@@ -304,13 +304,13 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 		all: true
 	});
 
-	if(section.members.static.length > 0) {
-		for(let i=0; i<section.members.static.length; i++) {
+	if (section.members.static.length > 0) {
+		for (let i = 0; i < section.members.static.length; i++) {
 			const tagName = section.members.static[i].tags.reduce((res, tag) => tag.title === 'name' ? res + tag.name : res, []);
 			const linkName = section.members.static[i].description.children[0].children.reduce((res, tag) => tag.type === 'link' ? res + tag.url.split('.')[1] : res, []);
 			staticMembersDescriptionArray.push(renderDescription(section.members.static[i]) + linkName + ' : ' + tagName + '\n\n');
 		}
-		staticMembersDescription = staticMembersDescriptionArray.reduce((acc, current) => acc + current + '\n')
+		staticMembersDescription = staticMembersDescriptionArray.reduce((acc, current) => acc + current + '\n');
 	}
 	return `${propsInterface}
 		${renderDescription(section)}
