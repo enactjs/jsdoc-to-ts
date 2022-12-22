@@ -1,7 +1,6 @@
 const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
-const documentation = require('documentation');
 const log = require('loglevel');
 const prettier = require('prettier');
 
@@ -13,7 +12,8 @@ function isScript (filePath) {
 	return filePath.match(sourceExtension) != null;
 }
 
-function parse ({path: modulePath, files, format, importMap, output}) {
+async function parse ({path: modulePath, files, format, importMap, output}) {
+	const documentation = await import('documentation');
 	const encodeModule = makeParser();
 
 	if (!files || files.length === 0) {
