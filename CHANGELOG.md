@@ -1,6 +1,6 @@
 # Change Log
 
-## unreleased
+## [0.1.3] (December 22, 2022)
 
 * Fixed security vulnerabilities.
 
