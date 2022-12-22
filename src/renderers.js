@@ -292,11 +292,11 @@ exports.defaultHocRenderer = defaultHocRenderer;
 function defaultComponentRenderer ({section, renderer, imports, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const funcs = section.members.instance.filter(member => member.kind === 'function');
+
 	const omits = section.tags.reduce((res, tag) => tag.title === 'omit' ? res.concat(tag.description) : res, []);
 	const propsBase = calcPropsBaseName({imports, section});
 	const propsInterfaceName = `${section.name}Props`;
 	const propsInterface = renderInterface(propsInterfaceName, props, propsBase, typeRenderer, imports, omits);
-	let staticMembersDescriptionArray = [], staticMembersDescription = '';
 
 	imports.add({
 		module: 'react',
@@ -304,14 +304,6 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 		all: true
 	});
 
-	if (section.members.static.length > 0) {
-		for (let i = 0; i < section.members.static.length; i++) {
-			const tagName = section.members.static[i].tags.reduce((res, tag) => tag.title === 'name' ? res + tag.name : res, []);
-			const linkName = section.members.static[i].description.children[0].children.reduce((res, tag) => tag.type === 'link' ? res + tag.url.split('.')[1] : res, []);
-			staticMembersDescriptionArray.push(renderDescription(section.members.static[i]) + linkName + ' : ' + tagName + '\n\n');
-		}
-		staticMembersDescription = staticMembersDescriptionArray.reduce((acc, current) => acc + current + '\n');
-	}
 	return `${propsInterface}
 		${renderDescription(section)}
 		export class ${section.name} extends React.Component<Merge<React.HTMLProps<HTMLElement>, ${propsInterfaceName}>> {
@@ -320,7 +312,6 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 					.filter(Boolean)
 					.join('\n')
 			}
-			${staticMembersDescription}
 		}
 	`;
 }
