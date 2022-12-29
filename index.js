@@ -1,11 +1,11 @@
-import fs from 'fs'// const fs = require('fs');
-import glob from 'glob'// const glob = require('glob');
-import path from 'path'// const path = require('path');
-import {build} from 'documentation'// const documentation = require('documentation');
-import log from 'loglevel'// const log = require('loglevel');
-import prettier from 'prettier'// const prettier = require('prettier');
+import fs from 'fs';
+import glob from 'glob';
+import path from 'path';
+import {build} from 'documentation';
+import log from 'loglevel';
+import prettier from 'prettier';
 
-import {makeParser} from './src/parsers.js'// const {makeParser} = require('./src/parsers');
+import {makeParser} from './src/parsers.js';
 
 const sourceExtension = /\.jsx?$/i;
 

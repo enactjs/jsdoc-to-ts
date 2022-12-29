@@ -165,5 +165,3 @@ export function extractTypeImports (type, imports) {
 		}
 	}
 }
-// exports.renderType = renderType;
-// exports.extractTypeImports = extractTypeImports;

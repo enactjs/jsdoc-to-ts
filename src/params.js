@@ -5,7 +5,7 @@
  * @module params
  */
 
-import {renderDescription} from './description.js'//const {renderDescription} = require('./description');
+import {renderDescription} from './description.js';
 
 export function renderParam (param, typeRenderer) {
 	let {name, type} = param;
@@ -17,5 +17,3 @@ export function renderParam (param, typeRenderer) {
 
 	return `${renderDescription(param)}${name}${optional}: ${typeRenderer(type)}`;
 }
-
-// exports.renderParam = renderParam;

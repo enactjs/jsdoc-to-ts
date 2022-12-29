@@ -4,7 +4,7 @@
  * @module classifiers
  */
 
-import {hasComponentTag, hasHOCTag} from './utils.js'//const {hasComponentTag, hasHOCTag} = require('./utils');
+import {hasComponentTag, hasHOCTag} from './utils.js';
 
 export function defaultTypeClassifier ({section}) {
 	const kind = section.kind;
@@ -21,4 +21,3 @@ export function defaultTypeClassifier ({section}) {
 
 	return kind;
 }
-// exports.defaultTypeClassifier = defaultTypeClassifier;

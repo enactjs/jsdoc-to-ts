@@ -9,4 +9,3 @@
 export function defaultTypeFilter () {
 	return true;
 }
-// exports.defaultTypeFilter = defaultTypeFilter;

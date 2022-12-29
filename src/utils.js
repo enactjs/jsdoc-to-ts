@@ -1,4 +1,4 @@
-import jsonata from 'jsonata'//const jsonata = require('jsonata');
+import jsonata from 'jsonata';
 
 /**
  * Checks member for a 'required' tag
@@ -12,7 +12,7 @@ export const hasRequiredTag = (member) => {
 	const result = jsonata(expression).evaluate(member.tags);
 	return !!result;
 };
-// exports.hasRequiredTag = hasRequiredTag;
+
 /**
  * Checks member for a HOC tag
  * @param {Object} member
@@ -23,7 +23,6 @@ export const hasHOCTag = (member) => {
 	const result = jsonata(expression).evaluate(member.tags);
 	return !!result;
 };
-// exports.hasHOCTag = hasHOCTag;
 
 /**
  * Checks member for a 'ui' tag
@@ -37,10 +36,7 @@ export const hasComponentTag = (member) => {
 	const result = jsonata(expression).evaluate(member.tags);
 	return !!result;
 };
-// exports.hasComponentTag = hasComponentTag;
 
 export const escapeClassMember = (member) => {
 	return member.match(/-/) ? `'${member}'` : member;
 };
-
-// exports.escapeClassMember = escapeClassMember;

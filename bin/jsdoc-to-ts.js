@@ -4,10 +4,10 @@
 
 'use strict';
 
-import fs from 'fs'// const fs = require('fs');
-import path from 'path'//const path = require('path');
-import minimist from 'minimist'//const minimist = require('minimist');
-import jsdocToTs from '../index.js'//const jsdocToTs = require('..');
+import fs from 'fs';
+import path from 'path';
+import minimist from 'minimist';
+import jsdocToTs from '../index.js';
 
 // Uncaught error handler
 process.on('uncaughtException', err => console.error(err.stack));
