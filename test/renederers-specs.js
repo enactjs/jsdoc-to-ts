@@ -1,13 +1,13 @@
 // eslint-disable-next-line no-shadow
-const expect = require('chai').expect;
+import {expect} from 'chai';
 
-const {getDefaultRenderers, defaultModuleRenderer, defaultHocRenderer, defaultFunctionRenderer} = require('../src/renderers');
+import {getDefaultRenderers, defaultModuleRenderer, defaultHocRenderer, defaultFunctionRenderer} from '../src/renderers.js';
 
-const {
+import {
 	emptyModule, emptyModuleOutput,
 	completeHoc, completeHocOutput,
 	simpleFunction, simpleFunctionOutput
-} = require('./data');
+} from './data.js';
 
 function log () {}
 log.warn = () => {};

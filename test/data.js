@@ -1,4 +1,4 @@
-exports.a11yModule = [
+export const a11yModule = [
 	{
 		'description': {
 			'type': 'root',
@@ -431,7 +431,7 @@ exports.a11yModule = [
 ];
 
 
-exports.emptyModule = {
+export const emptyModule = {
 	'description': {
 		'type': 'root',
 		'children': [
@@ -473,7 +473,7 @@ exports.emptyModule = {
 	'namespace': 'ui/A11yDecorator'
 };
 
-exports.emptyModuleOutput =
+export const emptyModuleOutput =
 `
 		// Type definitions for ui/A11yDecorator
 
@@ -487,7 +487,7 @@ exports.emptyModuleOutput =
 \t\t
 \t`;
 
-exports.completeHoc = 				{
+export const completeHoc = 				{
 	'description': {
 		'type': 'root',
 		'children': [
@@ -871,9 +871,9 @@ exports.completeHoc = 				{
 	'namespace': 'ui/A11yDecoratorA11yDecorator'
 };
 
-exports.completeHocOutput = 'export interface A11yDecoratorConfig extends Object {\n\t\t/**\n * Configures the prop for the source of the component\'s content\n */\nprop?: string;\n\t}\n\t\texport interface A11yDecoratorProps  {\n\t\t/**\n * Sets the value of the  `aria-label`  attribute for the wrapped component.\n */\n\'aria-label\'?: string;\n/**\n * Sets the hint text to be read after the content.\n */\naccessibilityHint?: string;\n/**\n * Sets the hint text to be read before the content.\n */\naccessibilityPreHint?: string;\n\t}\n\t\texport function A11yDecorator<P>(\n\t\t\tconfig: A11yDecoratorConfig,\n\t\t\tComponent: React.ComponentType<P> | string\n\t\t): React.ComponentType<P & A11yDecoratorProps>;\n\t\t\n\t\t\texport function A11yDecorator<P>(\n\t\t\t\tComponent: React.ComponentType<P> | string\n\t\t\t): React.ComponentType<P & A11yDecoratorProps>;\n\t\t\n\t';
+export const completeHocOutput = 'export interface A11yDecoratorConfig extends Object {\n\t\t/**\n * Configures the prop for the source of the component\'s content\n */\nprop?: string;\n\t}\n\t\texport interface A11yDecoratorProps  {\n\t\t/**\n * Sets the value of the  `aria-label`  attribute for the wrapped component.\n */\n\'aria-label\'?: string;\n/**\n * Sets the hint text to be read after the content.\n */\naccessibilityHint?: string;\n/**\n * Sets the hint text to be read before the content.\n */\naccessibilityPreHint?: string;\n\t}\n\t\texport function A11yDecorator<P>(\n\t\t\tconfig: A11yDecoratorConfig,\n\t\t\tComponent: React.ComponentType<P> | string\n\t\t): React.ComponentType<P & A11yDecoratorProps>;\n\t\t\n\t\t\texport function A11yDecorator<P>(\n\t\t\t\tComponent: React.ComponentType<P> | string\n\t\t\t): React.ComponentType<P & A11yDecoratorProps>;\n\t\t\n\t';
 
-exports.simpleFunction = {
+export const simpleFunction = {
 	'description': {
 		'type': 'root',
 		'children': [
@@ -986,7 +986,7 @@ exports.simpleFunction = {
 	'namespace': 'core/utilcap'
 };
 
-exports.simpleFunctionOutput =
+export const simpleFunctionOutput =
 `/**
  * Capitalizes a given string (not locale-aware).
  */

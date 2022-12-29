@@ -24,7 +24,7 @@ function exportDeclarations (moduleName) {
 	};
 }
 
-function defaultModuleRenderer ({section, parent, root, importMap, log, renderer}) {
+export function defaultModuleRenderer ({section, parent, root, importMap, log, renderer}) {
 	if (parent !== root) {
 		log.warn(`Unexpected module ${section.name}`);
 		return;
@@ -159,7 +159,7 @@ const formatFunction = (section, exp, instance, name, templates, params, ret) =>
 			`${name}${templates}${params}: ${ret};`;
 };
 
-function defaultFunctionRenderer ({section, export: exp = false, instance = false, typeRenderer = renderType}) {
+export function defaultFunctionRenderer ({section, export: exp = false, instance = false, typeRenderer = renderType}) {
 	let returns = 'void';
 
 	const parameters = section.params;
@@ -253,7 +253,7 @@ function calcPropsBaseName ({imports, section}) {
 	}, '');
 }
 
-function defaultHocRenderer ({section, imports, typeRenderer = renderType}) {
+export function defaultHocRenderer ({section, imports, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const config = section.members.static.find(member => member.tags.find(tag => tag.title === 'hocconfig'));
 	const hasConfig = config && config.members.static.length > 0;
