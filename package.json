@@ -27,17 +27,17 @@
     }
   },
   "dependencies": {
-    "documentation": "^14.0.0",
+    "documentation": "^14.0.1",
     "glob": "^8.0.3",
     "jsonata": "^1.8.6",
     "loglevel": "^1.8.1",
     "minimist": "^1.2.7",
-    "prettier": "^2.8.0"
+    "prettier": "^2.8.2"
   },
   "devDependencies": {
     "chai": "^4.3.7",
     "eslint-config-enact-proxy": "^1.0.5",
-    "mocha": "^10.1.0",
+    "mocha": "^10.2.0",
     "react": "^18.2.0"
   }
 }
