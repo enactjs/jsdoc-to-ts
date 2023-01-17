@@ -28,11 +28,11 @@
   },
   "dependencies": {
     "documentation": "^14.0.1",
-    "glob": "^8.0.3",
+    "glob": "^8.1.0",
     "jsonata": "^1.8.6",
     "loglevel": "^1.8.1",
     "minimist": "^1.2.7",
-    "prettier": "^2.8.2"
+    "prettier": "^2.8.3"
   },
   "devDependencies": {
     "chai": "^4.3.7",
