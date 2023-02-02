@@ -50,10 +50,10 @@ async function defaultModuleRenderer ({section, parent, root, importMap, log, re
 	if (!section.tags.filter(isExports).length) {
 		log.warn(`No @exports found in ${moduleName}`);
 	}
-	const rend = await renderer({section: section.members.static, imports, export: true})
+
 	const body = `
 		${
-			rend 
+		(await renderer({section: section.members.static, imports, export: true})) 
 				.filter(Boolean)
 				.join('\n')
 		}
@@ -194,7 +194,7 @@ function defaultFunctionRenderer ({section, export: exp = false, instance = fals
 
 exports.defaultFunctionRenderer = defaultFunctionRenderer;
 
-function defaultConstantRenderer ({section, export: exp, renderer}) {
+async function defaultConstantRenderer ({section, export: exp, renderer}) {
 	const declaration = `${renderDescription(section)}${exp ? 'export ' : ''}declare const ${section.name}:`;
 	if (section.members.static.length === 0) {
 		return `${declaration} ${renderType(section.type)};`;
@@ -202,7 +202,7 @@ function defaultConstantRenderer ({section, export: exp, renderer}) {
 
 	return `${declaration} {
 		${
-			renderer({section: section.members.static, instance: true})
+		(await renderer({section: section.members.static, instance: true}))
 				.filter(Boolean)
 				.join('\n')
 		}
@@ -313,12 +313,11 @@ async function defaultComponentRenderer ({section, renderer, imports, typeRender
 		staticMembersDescription = staticMembersDescriptionArray.reduce((acc, current) => acc + current + '\n');
 	}
 
-	const rend = await renderer({section: funcs, export: false, instance: true})
 	return `${propsInterface}
 		${renderDescription(section)}
 		export class ${section.name} extends React.Component<Merge<React.HTMLProps<HTMLElement>, ${propsInterfaceName}>> {
 			${
-		rend
+		(await renderer({section: funcs, export: false, instance: true}))
 			.filter(Boolean)
 			.join('\n')
 	}
@@ -329,7 +328,7 @@ async function defaultComponentRenderer ({section, renderer, imports, typeRender
 
 exports.defaultComponentRenderer = defaultComponentRenderer;
 
-function defaultClassRenderer ({section, export: exp, renderer}) {
+async function defaultClassRenderer ({section, export: exp, renderer}) {
 	return `
 		${renderDescription(section)}
 		${exp ? 'export ' : ''}declare class ${section.name} {
@@ -337,7 +336,7 @@ function defaultClassRenderer ({section, export: exp, renderer}) {
 			`constructor(${section.constructorComment.params.map(prop => renderParam(prop, renderType)).join(', ')});`
 		) : ''}
 		${
-			renderer({section: section.members.instance, instance: true})
+			(await renderer({section: section.members.instance, instance: true}))
 				.filter(Boolean)
 				.join('\n')
 		}

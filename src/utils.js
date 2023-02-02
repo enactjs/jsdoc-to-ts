@@ -17,10 +17,11 @@ const hasRequiredTag = async (member) => {
 exports.hasRequiredTag = hasRequiredTag;
 /**
  * Checks member for a HOC tag
+ *
  * @param {Object} member
  */
 const hasHOCTag = async (member) => {
-	// Find any tag field whose `title` is 'hoc'
+	// Find any tag field whose `title` is 'hoc' (won't be there if not required)
 	let result;
 	await (async () => {
 		const expression = "$[title='hoc']";
@@ -36,7 +37,7 @@ exports.hasHOCTag = hasHOCTag;
  * @param {Object} member A property definition
  */
 const hasComponentTag = async (member) => {
-	// Find any tag field whose `title` is 'required' (won't be there if not required)
+	// Find any tag field whose `title` is 'ui' (won't be there if not required)
 	let result;
 	await (async () => {
 		const expression = "$[title='ui']";
