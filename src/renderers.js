@@ -24,7 +24,7 @@ function exportDeclarations (moduleName) {
 	};
 }
 
-function defaultModuleRenderer ({section, parent, root, importMap, log, renderer}) {
+async function defaultModuleRenderer ({section, parent, root, importMap, log, renderer}) {
 	if (parent !== root) {
 		log.warn(`Unexpected module ${section.name}`);
 		return;
@@ -50,10 +50,10 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 	if (!section.tags.filter(isExports).length) {
 		log.warn(`No @exports found in ${moduleName}`);
 	}
-
+	const rend = await renderer({section: section.members.static, imports, export: true})
 	const body = `
 		${
-			renderer({section: section.members.static, imports, export: true})
+			rend 
 				.filter(Boolean)
 				.join('\n')
 		}
@@ -211,18 +211,18 @@ function defaultConstantRenderer ({section, export: exp, renderer}) {
 
 exports.defaultConstantRenderer = defaultConstantRenderer;
 
-function renderInterface (name, members, interfaceBase, typeRenderer, imports, omits) {
+async function renderInterface (name, members, interfaceBase, typeRenderer, imports, omits) {
 	if (interfaceBase && omits && omits.length) {
 		const omitString = '"' + omits.join('"|"') + '"';
 		interfaceBase = `Omit<${interfaceBase}, ${omitString}>`;
 	}
 
 	return `export interface ${name} ${interfaceBase ? `extends ${interfaceBase}` : ''} {
-		${members.map(member => {
-			const required = hasRequiredTag(member) ? '' : '?';
-			extractTypeImports(member.type, imports);
-			return `${renderDescription(member)}${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
-		}).join('\n')}
+		${(await Promise.all(members.map(async member => {
+		const required = await hasRequiredTag(member) ? '' : '?';
+		extractTypeImports(member.type, imports);
+		return `${renderDescription(member)}${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
+	}))).join('\n')}
 	}`;
 }
 
@@ -259,17 +259,17 @@ function calcPropsBaseName ({imports, section}) {
 	}, '');
 }
 
-function defaultHocRenderer ({section, imports, typeRenderer = renderType}) {
+async function defaultHocRenderer ({section, imports, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const config = section.members.static.find(member => member.tags.find(tag => tag.title === 'hocconfig'));
 	const hasConfig = config && config.members.static.length > 0;
 
 	const propsBase = calcPropsBaseName({imports, section});
 	const propsInterfaceName = `${section.name}Props`;
-	const propsInterface = renderInterface(propsInterfaceName, props, propsBase, typeRenderer);
+	const propsInterface = await renderInterface(propsInterfaceName, props, propsBase, typeRenderer);
 
 	const configInterfaceName = `${section.name}Config`;
-	const configInterface = !hasConfig ? '' : renderInterface(configInterfaceName, config.members.static, 'Object', typeRenderer);
+	const configInterface = !hasConfig ? '' : await renderInterface(configInterfaceName, config.members.static, 'Object', typeRenderer);
 
 	const returnType = `React.ComponentType<P & ${propsInterfaceName}>`;
 	return `${configInterface}
@@ -289,13 +289,13 @@ function defaultHocRenderer ({section, imports, typeRenderer = renderType}) {
 exports.defaultHocRenderer = defaultHocRenderer;
 
 // TODO: Add some hinting so we can derive the proper HTML Element to base props on (e.g. Input -> HTMLInputElement)
-function defaultComponentRenderer ({section, renderer, imports, typeRenderer = renderType}) {
+async function defaultComponentRenderer ({section, renderer, imports, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const funcs = section.members.instance.filter(member => member.kind === 'function');
 	const omits = section.tags.reduce((res, tag) => tag.title === 'omit' ? res.concat(tag.description) : res, []);
 	const propsBase = calcPropsBaseName({imports, section});
 	const propsInterfaceName = `${section.name}Props`;
-	const propsInterface = renderInterface(propsInterfaceName, props, propsBase, typeRenderer, imports, omits);
+	const propsInterface = await renderInterface(propsInterfaceName, props, propsBase, typeRenderer, imports, omits);
 	let staticMembersDescriptionArray = [], staticMembersDescription = '';
 
 	imports.add({
@@ -312,14 +312,16 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 		}
 		staticMembersDescription = staticMembersDescriptionArray.reduce((acc, current) => acc + current + '\n');
 	}
+
+	const rend = await renderer({section: funcs, export: false, instance: true})
 	return `${propsInterface}
 		${renderDescription(section)}
 		export class ${section.name} extends React.Component<Merge<React.HTMLProps<HTMLElement>, ${propsInterfaceName}>> {
 			${
-				renderer({section: funcs, export: false, instance: true})
-					.filter(Boolean)
-					.join('\n')
-			}
+		rend
+			.filter(Boolean)
+			.join('\n')
+	}
 			${staticMembersDescription}
 		}
 	`;
