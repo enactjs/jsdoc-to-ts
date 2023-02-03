@@ -53,7 +53,7 @@ async function defaultModuleRenderer ({section, parent, root, importMap, log, re
 
 	const body = `
 		${
-		(await renderer({section: section.members.static, imports, export: true})) 
+		(await renderer({section: section.members.static, imports, export: true}))
 				.filter(Boolean)
 				.join('\n')
 		}

@@ -11,7 +11,7 @@ const hasRequiredTag = async (member) => {
 	await (async () => {
 		const expression = "$[title='required']";
 		result = await jsonata(expression).evaluate(member.tags);
-	})()
+	})();
 	return !!result;
 };
 exports.hasRequiredTag = hasRequiredTag;
@@ -26,7 +26,7 @@ const hasHOCTag = async (member) => {
 	await (async () => {
 		const expression = "$[title='hoc']";
 		result = await jsonata(expression).evaluate(member.tags);
-	})()
+	})();
 	return !!result;
 };
 exports.hasHOCTag = hasHOCTag;
@@ -42,7 +42,7 @@ const hasComponentTag = async (member) => {
 	await (async () => {
 		const expression = "$[title='ui']";
 		result = await jsonata(expression).evaluate(member.tags);
-	})()
+	})();
 	return !!result;
 };
 exports.hasComponentTag = hasComponentTag;
