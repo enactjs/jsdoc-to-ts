@@ -7,11 +7,8 @@ const jsonata = require('jsonata');
  */
 const hasRequiredTag = async (member) => {
 	// Find any tag field whose `title` is 'required' (won't be there if not required)
-	let result;
-	await (async () => {
-		const expression = "$[title='required']";
-		result = await jsonata(expression).evaluate(member.tags);
-	})();
+	const expression = "$[title='required']";
+	const result = await jsonata(expression).evaluate(member.tags);
 	return !!result;
 };
 exports.hasRequiredTag = hasRequiredTag;
@@ -22,11 +19,8 @@ exports.hasRequiredTag = hasRequiredTag;
  */
 const hasHOCTag = async (member) => {
 	// Find any tag field whose `title` is 'hoc' (won't be there if not required)
-	let result;
-	await (async () => {
-		const expression = "$[title='hoc']";
-		result = await jsonata(expression).evaluate(member.tags);
-	})();
+	const expression = "$[title='hoc']";
+	const result = await jsonata(expression).evaluate(member.tags);
 	return !!result;
 };
 exports.hasHOCTag = hasHOCTag;
@@ -38,11 +32,8 @@ exports.hasHOCTag = hasHOCTag;
  */
 const hasComponentTag = async (member) => {
 	// Find any tag field whose `title` is 'ui' (won't be there if not required)
-	let result;
-	await (async () => {
-		const expression = "$[title='ui']";
-		result = await jsonata(expression).evaluate(member.tags);
-	})();
+	const expression = "$[title='ui']";
+	const result = await jsonata(expression).evaluate(member.tags);
 	return !!result;
 };
 exports.hasComponentTag = hasComponentTag;
