@@ -4,6 +4,7 @@ const jsonata = require('jsonata');
  * Checks member for a 'required' tag
  *
  * @param {Object} member A property definition
+ * @returns {Boolean}
  */
 const hasRequiredTag = async (member) => {
 	// Find any tag field whose `title` is 'required' (won't be there if not required)
@@ -12,10 +13,12 @@ const hasRequiredTag = async (member) => {
 	return !!result;
 };
 exports.hasRequiredTag = hasRequiredTag;
+
 /**
  * Checks member for a HOC tag
  *
  * @param {Object} member
+ * @returns {Boolean}
  */
 const hasHOCTag = async (member) => {
 	// Find any tag field whose `title` is 'hoc' (won't be there if not required)
@@ -29,6 +32,7 @@ exports.hasHOCTag = hasHOCTag;
  * Checks member for a 'ui' tag
  *
  * @param {Object} member A property definition
+ * @returns {Boolean}
  */
 const hasComponentTag = async (member) => {
 	// Find any tag field whose `title` is 'ui' (won't be there if not required)
