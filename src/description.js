@@ -34,7 +34,3 @@ export function renderDescription (section) {
 	const desc = joinValues(section.description).replace(/\n \*$/g, '\n');
 	return desc ? `/**${desc} */\n` : '';
 }
-
-// module.exports = {
-// 	renderDescription
-// };
