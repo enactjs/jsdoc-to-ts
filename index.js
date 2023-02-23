@@ -50,9 +50,10 @@ function getSourceFiles (base, ignore) {
 
 			const entries = files
 				.filter(name => !ignore.find(i => name.includes(i)))
-				.map(async relativePackageJsonPath => {
+				.map(relativePackageJsonPath => {
 					const packageJsonPath = path.join(base, relativePackageJsonPath);
-					const pkg = await import(packageJsonPath);
+					let pkg = fs.readFileSync(packageJsonPath, 'utf-8');
+					pkg = JSON.parse(pkg);
 					const dirPath = path.dirname(path.resolve(path.dirname(packageJsonPath), pkg.main));
 
 					return {
