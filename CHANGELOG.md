@@ -1,5 +1,9 @@
 # Change Log
 
+## unreleased
+
+* Migrate project to ESM.
+
 ## [0.1.3] (December 22, 2022)
 
 * Fixed security vulnerabilities.
