@@ -190,7 +190,7 @@ export function defaultFunctionRenderer ({section, export: exp = false, instance
 	return formatFunction(section, exp, instance, section.name, templates, parametersOutput, returns);
 }
 
-function defaultConstantRenderer ({section, export: exp, renderer}) {
+export function defaultConstantRenderer ({section, export: exp, renderer}) {
 	const declaration = `${renderDescription(section)}${exp ? 'export ' : ''}declare const ${section.name}:`;
 	if (section.members.static.length === 0) {
 		return `${declaration} ${renderType(section.type)};`;
@@ -281,7 +281,7 @@ export function defaultHocRenderer ({section, imports, typeRenderer = renderType
 }
 
 // TODO: Add some hinting so we can derive the proper HTML Element to base props on (e.g. Input -> HTMLInputElement)
-function defaultComponentRenderer ({section, renderer, imports, typeRenderer = renderType}) {
+export function defaultComponentRenderer ({section, renderer, imports, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const funcs = section.members.instance.filter(member => member.kind === 'function');
 
@@ -308,7 +308,7 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 	`;
 }
 
-function defaultClassRenderer ({section, export: exp, renderer}) {
+export function defaultClassRenderer ({section, export: exp, renderer}) {
 	return `
 		${renderDescription(section)}
 		${exp ? 'export ' : ''}declare class ${section.name} {
@@ -323,7 +323,7 @@ function defaultClassRenderer ({section, export: exp, renderer}) {
 	};\n`;
 }
 
-function defaultTypedefRenderer ({section, export: exp}) {
+export function defaultTypedefRenderer ({section, export: exp}) {
 	let outputStr;
 
 	if (section.type.name === 'Object') {
