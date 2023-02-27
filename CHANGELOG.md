@@ -1,6 +1,6 @@
 # Change Log
 
-## unreleased
+## [unreleased]
 
 * Migrate project to ESM.
 
