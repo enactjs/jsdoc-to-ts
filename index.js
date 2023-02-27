@@ -52,8 +52,7 @@ function getSourceFiles (base, ignore) {
 				.filter(name => !ignore.find(i => name.includes(i)))
 				.map(relativePackageJsonPath => {
 					const packageJsonPath = path.join(base, relativePackageJsonPath);
-					let pkg = fs.readFileSync(packageJsonPath, 'utf-8');
-					pkg = JSON.parse(pkg);
+					const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
 					const dirPath = path.dirname(path.resolve(path.dirname(packageJsonPath), pkg.main));
 
 					return {
