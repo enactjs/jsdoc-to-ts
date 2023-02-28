@@ -13,8 +13,8 @@ function isScript (filePath) {
 	return filePath.match(sourceExtension) != null;
 }
 
-function parse ({path: modulePath, files, format, importMap, output}) {
-	const encodeModule = makeParser();
+async function parse ({path: modulePath, files, format, importMap, output}) {
+	const encodeModule = await makeParser();
 
 	if (!files || files.length === 0) {
 		log.info(`No source files found for ${modulePath}.`);
@@ -22,9 +22,9 @@ function parse ({path: modulePath, files, format, importMap, output}) {
 	}
 
 	log.info(`Parsing ${modulePath} ...`);
-	build(files, {shallow: true}).then(
-		(root) => {
-			let result = encodeModule({root, section: root, parent: root, importMap, log}).join('\n');
+	await documentation.build(files, {shallow: true}).then(
+		async (root) => {
+			let result = (await encodeModule({root, section: root, parent: root, importMap, log})).join('\n');
 			const firstNamedEntry = root.find(entry => entry.name);
 			let moduleName = firstNamedEntry ? firstNamedEntry.name : '';
 

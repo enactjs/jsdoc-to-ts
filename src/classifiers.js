@@ -6,16 +6,16 @@
 
 import {hasComponentTag, hasHOCTag} from './utils.js';
 
-export function defaultTypeClassifier ({section}) {
+export async function defaultTypeClassifier ({section}) {
 	const kind = section.kind;
 
 	// Check for HOC
-	if (hasHOCTag(section)) {
+	if (await hasHOCTag(section)) {
 		return 'hoc';
 	}
 
 	// Check for @ui
-	if (hasComponentTag(section)) {
+	if (await hasComponentTag(section)) {
 		return 'component';
 	}
 
