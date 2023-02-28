@@ -22,7 +22,7 @@ async function parse ({path: modulePath, files, format, importMap, output}) {
 	}
 
 	log.info(`Parsing ${modulePath} ...`);
-	await documentation.build(files, {shallow: true}).then(
+	await build(files, {shallow: true}).then(
 		async (root) => {
 			let result = (await encodeModule({root, section: root, parent: root, importMap, log})).join('\n');
 			const firstNamedEntry = root.find(entry => entry.name);
