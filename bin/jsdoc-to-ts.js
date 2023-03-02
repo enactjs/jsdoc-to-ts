@@ -5,6 +5,7 @@
 'use strict';
 
 import fs from 'fs';
+import url from 'url';
 import path from 'path';
 import minimist from 'minimist';
 import jsdocToTs from '../index.js';
@@ -13,10 +14,12 @@ import jsdocToTs from '../index.js';
 process.on('uncaughtException', err => console.error(err.stack));
 
 function displayHelp () {
-	let e = 'node ' + path.relative(process.cwd(), __filename);
-	if (require.main !== module) e = 'jsdoc-to-ts';
+	const modulePath = url.fileURLToPath(import.meta.url);
+	const pkg = JSON.parse(fs.readFileSync(path.resolve(modulePath + '../../../package.json'), 'utf-8'));
+	let e = 'node ' + path.relative(process.cwd(), modulePath);
+	if (process.argv[1] !== modulePath) e = 'jsdoc-to-ts';
 
-	console.log('  jsdoc-to-ts v' + require('../package.json').version);
+	console.log('  jsdoc-to-ts v' + pkg.version);
 	console.log();
 	console.log('  Usage');
 	console.log(`    ${e} [options] [source]`);
