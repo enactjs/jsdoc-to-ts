@@ -13,7 +13,7 @@ const jsdocToTs = require('..');
 process.on('uncaughtException', err => console.error(err.stack));
 
 function displayHelp () {
-	let e = 'node ' + path.relative(process.cwd(), __filename);	// eslint-disable-line no-undef
+	let e = 'node ' + path.relative(process.cwd(), __filename);
 	if (require.main !== module) e = 'jsdoc-to-ts';
 
 	console.log('  jsdoc-to-ts v' + require('../package.json').version);
