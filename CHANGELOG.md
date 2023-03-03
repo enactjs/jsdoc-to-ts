@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.4] (March 3, 2023)
+
+* Added the rendering of static members for a component.
+* Fixed security vulnerabilities.
+
 ## [0.1.3] (December 22, 2022)
 
 * Fixed security vulnerabilities.
