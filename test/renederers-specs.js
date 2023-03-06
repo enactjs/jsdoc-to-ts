@@ -33,19 +33,19 @@ describe('renderers', function () {
 	});
 
 	describe('defaultModuleRenderer', function () {
-		it('should render only header if no members', function () {
+		it('should render only header if no members', async function () {
 			const renderer = () => [];
 
 			const expected = emptyModuleOutput;
-			const view = defaultModuleRenderer({section: emptyModule, parent: emptyModule, root: emptyModule, log, renderer});
+			const view = await defaultModuleRenderer({section: emptyModule, parent: emptyModule, root: emptyModule, log, renderer});
 			expect(view).equal(expected);
 		});
 	});
 
 	describe('defaultHocRenderer', function () {
-		it('should a complete hoc', function () {
+		it('should a complete hoc', async function () {
 			const expected = completeHocOutput;
-			const view = defaultHocRenderer({section: completeHoc, parent: completeHoc, root: completeHoc, log});
+			const view = await defaultHocRenderer({section: completeHoc, parent: completeHoc, root: completeHoc, log});
 			expect(view).equal(expected);
 		});
 	});
