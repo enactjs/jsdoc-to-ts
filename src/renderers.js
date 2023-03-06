@@ -24,7 +24,7 @@ function exportDeclarations (moduleName) {
 	};
 }
 
-export function defaultModuleRenderer ({section, parent, root, importMap, log, renderer}) {
+export async function defaultModuleRenderer ({section, parent, root, importMap, log, renderer}) {
 	if (parent !== root) {
 		log.warn(`Unexpected module ${section.name}`);
 		return;
@@ -53,7 +53,7 @@ export function defaultModuleRenderer ({section, parent, root, importMap, log, r
 
 	const body = `
 		${
-			renderer({section: section.members.static, imports, export: true})
+		(await renderer({section: section.members.static, imports, export: true}))
 				.filter(Boolean)
 				.join('\n')
 		}
@@ -190,7 +190,7 @@ export function defaultFunctionRenderer ({section, export: exp = false, instance
 	return formatFunction(section, exp, instance, section.name, templates, parametersOutput, returns);
 }
 
-export function defaultConstantRenderer ({section, export: exp, renderer}) {
+export async function defaultConstantRenderer ({section, export: exp, renderer}) {
 	const declaration = `${renderDescription(section)}${exp ? 'export ' : ''}declare const ${section.name}:`;
 	if (section.members.static.length === 0) {
 		return `${declaration} ${renderType(section.type)};`;
@@ -198,25 +198,25 @@ export function defaultConstantRenderer ({section, export: exp, renderer}) {
 
 	return `${declaration} {
 		${
-			renderer({section: section.members.static, instance: true})
+		(await renderer({section: section.members.static, instance: true}))
 				.filter(Boolean)
 				.join('\n')
 		}
 	};`;
 }
 
-function renderInterface (name, members, interfaceBase, typeRenderer, imports, omits) {
+async function renderInterface (name, members, interfaceBase, typeRenderer, imports, omits) {
 	if (interfaceBase && omits && omits.length) {
 		const omitString = '"' + omits.join('"|"') + '"';
 		interfaceBase = `Omit<${interfaceBase}, ${omitString}>`;
 	}
 
 	return `export interface ${name} ${interfaceBase ? `extends ${interfaceBase}` : ''} {
-		${members.map(member => {
-			const required = hasRequiredTag(member) ? '' : '?';
-			extractTypeImports(member.type, imports);
-			return `${renderDescription(member)}${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
-		}).join('\n')}
+		${(await Promise.all(members.map(async member => {
+		const required = await hasRequiredTag(member) ? '' : '?';
+		extractTypeImports(member.type, imports);
+		return `${renderDescription(member)}${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
+	}))).join('\n')}
 	}`;
 }
 
@@ -253,17 +253,17 @@ function calcPropsBaseName ({imports, section}) {
 	}, '');
 }
 
-export function defaultHocRenderer ({section, imports, typeRenderer = renderType}) {
+export async function defaultHocRenderer ({section, imports, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const config = section.members.static.find(member => member.tags.find(tag => tag.title === 'hocconfig'));
 	const hasConfig = config && config.members.static.length > 0;
 
 	const propsBase = calcPropsBaseName({imports, section});
 	const propsInterfaceName = `${section.name}Props`;
-	const propsInterface = renderInterface(propsInterfaceName, props, propsBase, typeRenderer);
+	const propsInterface = await renderInterface(propsInterfaceName, props, propsBase, typeRenderer);
 
 	const configInterfaceName = `${section.name}Config`;
-	const configInterface = !hasConfig ? '' : renderInterface(configInterfaceName, config.members.static, 'Object', typeRenderer);
+	const configInterface = !hasConfig ? '' : await renderInterface(configInterfaceName, config.members.static, 'Object', typeRenderer);
 
 	const returnType = `React.ComponentType<P & ${propsInterfaceName}>`;
 	return `${configInterface}
@@ -281,13 +281,13 @@ export function defaultHocRenderer ({section, imports, typeRenderer = renderType
 }
 
 // TODO: Add some hinting so we can derive the proper HTML Element to base props on (e.g. Input -> HTMLInputElement)
-export function defaultComponentRenderer ({section, renderer, imports, typeRenderer = renderType}) {
+export async function defaultComponentRenderer ({section, renderer, imports, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const funcs = section.members.instance.filter(member => member.kind === 'function');
 	const omits = section.tags.reduce((res, tag) => tag.title === 'omit' ? res.concat(tag.description) : res, []);
 	const propsBase = calcPropsBaseName({imports, section});
 	const propsInterfaceName = `${section.name}Props`;
-	const propsInterface = renderInterface(propsInterfaceName, props, propsBase, typeRenderer, imports, omits);
+	const propsInterface = await renderInterface(propsInterfaceName, props, propsBase, typeRenderer, imports, omits);
 	let staticMembersDescriptionArray = [], staticMembersDescription = '';
 
 	imports.add({
@@ -304,20 +304,21 @@ export function defaultComponentRenderer ({section, renderer, imports, typeRende
 		}
 		staticMembersDescription = staticMembersDescriptionArray.reduce((acc, current) => acc + current + '\n');
 	}
+
 	return `${propsInterface}
 		${renderDescription(section)}
 		export class ${section.name} extends React.Component<Merge<React.HTMLProps<HTMLElement>, ${propsInterfaceName}>> {
 			${
-				renderer({section: funcs, export: false, instance: true})
-					.filter(Boolean)
-					.join('\n')
-			}
+		(await renderer({section: funcs, export: false, instance: true}))
+			.filter(Boolean)
+			.join('\n')
+	}
 			${staticMembersDescription}
 		}
 	`;
 }
 
-export function defaultClassRenderer ({section, export: exp, renderer}) {
+export async function defaultClassRenderer ({section, export: exp, renderer}) {
 	return `
 		${renderDescription(section)}
 		${exp ? 'export ' : ''}declare class ${section.name} {
@@ -325,7 +326,7 @@ export function defaultClassRenderer ({section, export: exp, renderer}) {
 			`constructor(${section.constructorComment.params.map(prop => renderParam(prop, renderType)).join(', ')});`
 		) : ''}
 		${
-			renderer({section: section.members.instance, instance: true})
+			(await renderer({section: section.members.instance, instance: true}))
 				.filter(Boolean)
 				.join('\n')
 		}
