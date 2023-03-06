@@ -16,29 +16,28 @@ const {getDefaultRenderers} = require('./renderers');
  * @param {Object} param.typeRenderers An object whose keys are classified types and whose
  *	values are functions for processing those types
  */
-function makeParser (
+async function makeParser (
 		{
 			typeFilter = defaultTypeFilter,
 			typeClassifier = defaultTypeClassifier,
 			typeRenderers = getDefaultRenderers()
 		} = {}
 ) {
-	return function parser ({section, root, log, typedefs = [], ...rest}) {
+	return async function parser ({section, root, log, typedefs = [], ...rest}) {
 		if (!Array.isArray(section)) return [];
 
-		return section.filter(typeFilter).map(item => {
-			const type = typeClassifier({section: item, parent: section, root, ...rest});
+		return await Promise.all(section.filter(typeFilter).map(async item => {
+			const type = await typeClassifier({section: item, parent: section, root, ...rest});
 			if (!type || !typeRenderers[type]) {
 				log.info(`Skipping unrecognized item ${item.name}`);
 				return;
 			}
-
-			return typeRenderers[type]({
+			return await typeRenderers[type]({
 				...rest,
 				parent: section,
 				root,
-				renderer: (args) => {
-					return parser({
+				renderer: async (args) => {
+					return await parser({
 						section,
 						typedefs,
 						...rest,
@@ -54,7 +53,7 @@ function makeParser (
 				section: item,
 				typedefs
 			});
-		});
+		}));
 	};
 }
 exports.makeParser = makeParser;

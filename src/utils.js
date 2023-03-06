@@ -6,21 +6,24 @@ const jsonata = require('jsonata');
  * @param {Object} member A property definition
  * @returns {Boolean}
  */
-const hasRequiredTag = (member) => {
+const hasRequiredTag = async (member) => {
 	// Find any tag field whose `title` is 'required' (won't be there if not required)
 	const expression = "$[title='required']";
-	const result = jsonata(expression).evaluate(member.tags);
+	const result = await jsonata(expression).evaluate(member.tags);
 	return !!result;
 };
 exports.hasRequiredTag = hasRequiredTag;
+
 /**
  * Checks member for a HOC tag
+ *
  * @param {Object} member
+ * @returns {Boolean}
  */
-const hasHOCTag = (member) => {
-	// Find any tag field whose `title` is 'hoc'
+const hasHOCTag = async (member) => {
+	// Find any tag field whose `title` is 'hoc' (won't be there if not required)
 	const expression = "$[title='hoc']";
-	const result = jsonata(expression).evaluate(member.tags);
+	const result = await jsonata(expression).evaluate(member.tags);
 	return !!result;
 };
 exports.hasHOCTag = hasHOCTag;
@@ -31,10 +34,10 @@ exports.hasHOCTag = hasHOCTag;
  * @param {Object} member A property definition
  * @returns {Boolean}
  */
-const hasComponentTag = (member) => {
-	// Find any tag field whose `title` is 'required' (won't be there if not required)
+const hasComponentTag = async (member) => {
+	// Find any tag field whose `title` is 'ui' (won't be there if not required)
 	const expression = "$[title='ui']";
-	const result = jsonata(expression).evaluate(member.tags);
+	const result = await jsonata(expression).evaluate(member.tags);
 	return !!result;
 };
 exports.hasComponentTag = hasComponentTag;

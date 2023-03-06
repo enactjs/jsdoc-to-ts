@@ -1,5 +1,9 @@
 # Change Log
 
+## [unreleased]
+
+* Updated `jsonata` dependency to version 2.x and refactored code to use async functions.
+
 ## [0.1.4] (March 3, 2023)
 
 * Added the rendering of static members for a component.
