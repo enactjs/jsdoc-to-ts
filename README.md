@@ -1,5 +1,5 @@
 ## @enact/jsdoc-to-ts [![NPM](https://img.shields.io/npm/v/@enact/jsdoc-to-ts.svg?style=flat-square)](https://www.npmjs.com/package/@enact/jsdoc-to-ts)
- 
+
 > Converts JSDoc comments into TypeScript d.ts files
 
 > Note. It's an experimental module.
@@ -12,68 +12,12 @@ npm install --save-dev @enact/jsdoc-to-ts
 
 ## Usage
 
-Assuming this directory is a peer of the Enact source and you want to write this into an installed (from npm) version of enact:
+Assuming this directory is a peer of the Sandstone source and you want to write this into an installed (from npm) version of sandstone:
 
 ```bash
-node -e "['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => require('.')({
-  package: '../enact/packages/' + p,
-  output: require('fs').writeFileSync,
-  ignore: ['node_modules', 'ilib'],
-  importMap: {
-    ui: '@enact/ui',
-    moonstone: '@enact/moonstone',
-    core: '@enact/core',
-    webos: '@enact/webos',
-    spotlight: '@enact/spotlight',
-    i18n: '@enact/i18n'
-  },
-  outputPath: '<path to installation>/node_modules/@enact/' + p
-}))"
+node bin/jsdoc-to-ts.js ../sandstone -o=<path to installation>/node_modules/@enact/sandstone
 ```
 NOTE: Replace `<path to installation>` with the directory you wish to update.
-
-## Working with Linked Enact
-
-The following command will parse the Enact source into a local `types` directory so you can use TypeScript with linked Enact:
-```bash
-node -e "['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => require('.')({
-  package: '<path to enact>/packages/' + p,
-  output: (filepath, content) => {
-    const path = require('path');
-    const dir = path.dirname(filepath);
-    const wfs = require('fs').writeFileSync;
-    // recursively create the path to the folder in types
-    require('mkdirp').sync(dir);
-    // write a package.json with a types member pointing to the .d.ts file
-    wfs(path.join(dir, 'package.json'), '{\"types\": \"' + path.basename(filepath) + '\"}');
-    // write the .d.ts file
-    wfs(filepath, content);
-  },
-  importMap: {
-    ui: '@enact/ui',
-    moonstone: '@enact/moonstone',
-    core: '@enact/core',
-    webos: '@enact/webos',
-    spotlight: '@enact/spotlight',
-    i18n: '@enact/i18n'
-  },
-  outputPath: '<path to installation>/types/@enact/' + p
-}))"
-```
-
-You also have to configure the app to resolve the generated typings by adding the following to the `tsconfig.json`.
-
-```
-    "compilerOptions": {
-        "baseUrl": ".",
-        "paths": {
-            "*": [
-                "*",
-                "types/*"
-            ]
-        }
-    }
-```
 
 ## Assumptions
 
