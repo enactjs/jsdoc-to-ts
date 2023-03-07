@@ -12,10 +12,10 @@ npm install --save-dev @enact/jsdoc-to-ts
 
 ## Usage
 
-Assuming this directory is a peer of the Sandstone source and you want to write this into an installed (from npm) version of sandstone:
+Assuming this directory is a peer of the Sandstone source and you want to write this into a same path of sandstone:
 
 ```bash
-node bin/jsdoc-to-ts.js ../sandstone -o=<path to installation>/node_modules/@enact/sandstone
+node bin/jsdoc-to-ts.js ../sandstone -o=../sandstone
 ```
 NOTE: Replace `<path to installation>` with the directory you wish to update.
 
@@ -32,7 +32,7 @@ Many assumptions, currently:
 Unless otherwise specified, all content, including all source code files and
 documentation files in this repository are:
 
-Copyright (c) 2018-2021 LG Electronics
+Copyright (c) 2018-2023 LG Electronics
 
 Unless otherwise specified or set forth in the NOTICE file, all content,
 including all source code files and documentation files in this repository are:
