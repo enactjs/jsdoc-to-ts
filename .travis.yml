@@ -12,15 +12,13 @@ install:
     - npm link
     - popd
     - git clone --branch=develop --depth 1 https://github.com/enactjs/sandstone ../sandstone
-    - pushd ../sandstone
-    - popd
     - npm install
 script:
     - echo -e "\x1b\x5b35;1m*** Starting tests...\x1b\x5b0m"
     - npm test -- --runInBand --coverage
     - echo -e "\x1b\x5b35;1m*** Tests complete\x1b\x5b0m"
     - echo -e "\x1b\x5b35;1m*** Starting eslint...\x1b\x5b0m"
-    - npm run lint -- -- --report-unused-disable-directives --max-warnings 0 .
+    - npm run lint -- --report-unused-disable-directives --max-warnings 0 .
     - echo -e "\x1b\x5b35;1m*** eslint complete\x1b\x5b0m"
     - echo -e "\x1b\x5b35;1m*** Starting help option...\x1b\x5b0m"
     - node bin/jsdoc-to-ts -h
