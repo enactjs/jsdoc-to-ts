@@ -99,6 +99,8 @@ function main ({
 				}
 			});
 		});
+	}).catch((err) => {
+		throw new Error(`Get source files error: ${err}`);
 	});
 }
 
