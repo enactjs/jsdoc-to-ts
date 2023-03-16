@@ -39,7 +39,7 @@ NOTE: Replace `<path to installation>` with the directory you wish to update.
 The following command will parse the Enact source into a local `types` directory so you can use TypeScript with linked Enact:
 ```bash
 node -e "import('./index.js').then((jsdocToTs) => {
-    ['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => require('.')({
+    ['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => jsdocToTs.default('.')({
     package: '<path to enact>/packages/' + p,
     output: (filepath, content) => {
       const path = require('path');
