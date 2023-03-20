@@ -5,7 +5,7 @@
 'use strict';
 
 import fs from 'fs';
-import url from 'url';
+import {fileURLToPath} from 'url';
 import path from 'path';
 import minimist from 'minimist';
 import jsdocToTs from '../index.js';
@@ -14,7 +14,7 @@ import jsdocToTs from '../index.js';
 process.on('uncaughtException', err => console.error(err.stack));
 
 function displayHelp () {
-	const modulePath = url.fileURLToPath(import.meta.url);
+	const modulePath = fileURLToPath(import.meta.url);
 	const pkg = JSON.parse(fs.readFileSync(path.resolve(modulePath + '../../../package.json'), 'utf-8'));
 	let e = 'node ' + path.relative(process.cwd(), modulePath);
 	if (process.argv[1] !== modulePath) e = 'jsdoc-to-ts';
@@ -50,7 +50,7 @@ if (opts.help) displayHelp();
 jsdocToTs({
 	package: opts._[0] || '.',
 	output: fs.writeFileSync,
-	ignore: ['node_modules', 'ilib', 'build', 'dist', 'samples', 'coverage', 'tests', 'docs'],
+	ignore: ['node_modules', 'ilib', 'build', 'dist', 'samples', 'coverage', 'tests'],
 	importMap: {
 		core: '@enact/core',
 		ui: '@enact/ui',
