@@ -33,7 +33,7 @@ export const hasHOCTag = async (member) => {
  * @returns {Boolean}
  */
 export const hasComponentTag = async (member) => {
-	// Find any tag field whose `title` is 'required' (won't be there if not required)
+	// Find any tag field whose `title` is 'ui' (won't be there if not required)
 	const expression = "$[title='ui']";
 	const result = await jsonata(expression).evaluate(member.tags);
 	return !!result;
