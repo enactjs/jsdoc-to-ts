@@ -15,8 +15,8 @@ npm install --save-dev @enact/jsdoc-to-ts
 Assuming this directory is a peer of the Enact source and you want to write this into an installed (from npm) version of enact:
 
 ```bash
-node -e "import('./index.js').then((jsdocToTs) => {
-  ['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => jsdocToTs.default({
+node -e "import('./index.js').then(({default: jsdocToTs}) => {
+  ['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => jsdocToTs({
     package: '../enact/packages/' + p,
     output: require('fs').writeFileSync,
     ignore: ['node_modules', 'ilib'],
@@ -30,7 +30,7 @@ node -e "import('./index.js').then((jsdocToTs) => {
     },
     outputPath: '<path to installation>/node_modules/@enact/' + p
   }))
-}"
+})"
 ```
 NOTE: Replace `<path to installation>` with the directory you wish to update.
 
@@ -38,8 +38,8 @@ NOTE: Replace `<path to installation>` with the directory you wish to update.
 
 The following command will parse the Enact source into a local `types` directory so you can use TypeScript with linked Enact:
 ```bash
-node -e "import('./index.js').then((jsdocToTs) => {
-    ['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => jsdocToTs.default('.')({
+node -e "import('./index.js').then(({default: jsdocToTs}) => {
+    ['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => jsdocToTs('.')({
     package: '<path to enact>/packages/' + p,
     output: (filepath, content) => {
       const path = require('path');
@@ -62,7 +62,7 @@ node -e "import('./index.js').then((jsdocToTs) => {
     },
     outputPath: '<path to installation>/types/@enact/' + p
   }))
-}"
+})"
 ```
 
 You also have to configure the app to resolve the generated typings by adding the following to the `tsconfig.json`.
