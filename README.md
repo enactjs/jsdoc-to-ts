@@ -65,7 +65,7 @@ node -e "import('./index.js').then(({default: jsdocToTs}) => {
   }))
 })"
 ```
-NOTE: You need to install mkdirp module in jsdoc-to-ts by yourself.
+NOTE: You may need to install `mkdirp` module in `jsdoc-to-ts` by yourself.
 
 You also have to configure the app to resolve the generated typings by adding the following to the `tsconfig.json`.
 
