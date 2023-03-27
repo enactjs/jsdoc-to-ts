@@ -3,9 +3,9 @@
  *
  * @module parsers
  */
-const {defaultTypeFilter} = require('./filters');
-const {defaultTypeClassifier} = require('./classifiers');
-const {getDefaultRenderers} = require('./renderers');
+import {defaultTypeFilter} from './filters.js';
+import {defaultTypeClassifier} from './classifiers.js';
+import {getDefaultRenderers} from './renderers.js';
 
 /**
  * Makes a parser that iterates over an array of supplied objects.
@@ -16,7 +16,7 @@ const {getDefaultRenderers} = require('./renderers');
  * @param {Object} param.typeRenderers An object whose keys are classified types and whose
  *	values are functions for processing those types
  */
-async function makeParser (
+export async function makeParser (
 		{
 			typeFilter = defaultTypeFilter,
 			typeClassifier = defaultTypeClassifier,
@@ -56,4 +56,3 @@ async function makeParser (
 		}));
 	};
 }
-exports.makeParser = makeParser;

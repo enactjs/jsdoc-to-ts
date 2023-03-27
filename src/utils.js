@@ -1,4 +1,4 @@
-const jsonata = require('jsonata');
+import jsonata from 'jsonata';
 
 /**
  * Checks member for a 'required' tag
@@ -6,13 +6,12 @@ const jsonata = require('jsonata');
  * @param {Object} member A property definition
  * @returns {Boolean}
  */
-const hasRequiredTag = async (member) => {
+export const hasRequiredTag = async (member) => {
 	// Find any tag field whose `title` is 'required' (won't be there if not required)
 	const expression = "$[title='required']";
 	const result = await jsonata(expression).evaluate(member.tags);
 	return !!result;
 };
-exports.hasRequiredTag = hasRequiredTag;
 
 /**
  * Checks member for a HOC tag
@@ -20,13 +19,12 @@ exports.hasRequiredTag = hasRequiredTag;
  * @param {Object} member
  * @returns {Boolean}
  */
-const hasHOCTag = async (member) => {
-	// Find any tag field whose `title` is 'hoc' (won't be there if not required)
+export const hasHOCTag = async (member) => {
+	// Find any tag field whose `title` is 'hoc'
 	const expression = "$[title='hoc']";
 	const result = await jsonata(expression).evaluate(member.tags);
 	return !!result;
 };
-exports.hasHOCTag = hasHOCTag;
 
 /**
  * Checks member for a 'ui' tag
@@ -34,16 +32,13 @@ exports.hasHOCTag = hasHOCTag;
  * @param {Object} member A property definition
  * @returns {Boolean}
  */
-const hasComponentTag = async (member) => {
+export const hasComponentTag = async (member) => {
 	// Find any tag field whose `title` is 'ui' (won't be there if not required)
 	const expression = "$[title='ui']";
 	const result = await jsonata(expression).evaluate(member.tags);
 	return !!result;
 };
-exports.hasComponentTag = hasComponentTag;
 
-const escapeClassMember = (member) => {
+export const escapeClassMember = (member) => {
 	return member.match(/-/) ? `'${member}'` : member;
 };
-
-exports.escapeClassMember = escapeClassMember;

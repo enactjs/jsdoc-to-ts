@@ -1,0 +1,28 @@
+dist: focal
+language: node_js
+node_js:
+    - lts/*
+    - node
+sudo: false
+install:
+    - npm config set prefer-offline false
+    - git clone --branch=develop --depth 1 https://github.com/enactjs/cli ../cli
+    - pushd ../cli
+    - npm install
+    - npm link
+    - popd
+    - git clone --branch=develop --depth 1 https://github.com/enactjs/sandstone ../sandstone
+    - npm install
+script:
+    - echo -e "\x1b\x5b35;1m*** Starting tests...\x1b\x5b0m"
+    - npm test -- --runInBand --coverage
+    - echo -e "\x1b\x5b35;1m*** Tests complete\x1b\x5b0m"
+    - echo -e "\x1b\x5b35;1m*** Starting eslint...\x1b\x5b0m"
+    - npm run lint -- --report-unused-disable-directives --max-warnings 0 .
+    - echo -e "\x1b\x5b35;1m*** eslint complete\x1b\x5b0m"
+    - echo -e "\x1b\x5b35;1m*** Starting help option...\x1b\x5b0m"
+    - node bin/jsdoc-to-ts -h
+    - echo -e "\x1b\x5b35;1m*** help option complete\x1b\x5b0m"
+    - echo -e "\x1b\x5b35;1m*** Starting JSDoc converting...\x1b\x5b0m"
+    - node bin/jsdoc-to-ts ../sandstone -o=../sandstone
+    - echo -e "\x1b\x5b35;1m*** JSDoc converting complete\x1b\x5b0m"
