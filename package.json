@@ -33,7 +33,6 @@
     "jsonata": "^2.0.1",
     "loglevel": "^1.8.1",
     "minimist": "^1.2.7",
-    "mkdirp": "^2.1.5",
     "prettier": "^2.8.3"
   },
   "devDependencies": {
