@@ -32,7 +32,7 @@ node -e "import('./index.js').then(({default: jsdocToTs}) => {
   }))
 })"
 ```
-NOTE: Replace `<path to installation>` with the directory you wish to update (This script requires at least Node.js 13.2.0.).
+NOTE: Replace `<path to installation>` with the directory you wish to update. The script requires at least Node.js 13.2.0. or later.
 
 ## Working with Linked Enact
 
