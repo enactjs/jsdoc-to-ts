@@ -13,7 +13,6 @@ npm install --save-dev @enact/jsdoc-to-ts
 ## Usage
 
 Assuming this directory is a peer of the Enact source and you want to write this into an installed (from npm) version of enact:
-(This script requires at least Node.js 13.2.0.)
 
 ```bash
 node -e "import('./index.js').then(({default: jsdocToTs}) => {
@@ -33,12 +32,12 @@ node -e "import('./index.js').then(({default: jsdocToTs}) => {
   }))
 })"
 ```
-NOTE: Replace `<path to installation>` with the directory you wish to update.
+NOTE: Replace `<path to installation>` with the directory you wish to update (This script requires at least Node.js 13.2.0.).
 
 ## Working with Linked Enact
 
 The following command will parse the Enact source into a local `types` directory so you can use TypeScript with linked Enact:
-(This script requires at least Node.js 13.2.0.)
+
 ```bash
 node -e "import('./index.js').then(({default: jsdocToTs}) => {
     ['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => jsdocToTs({
@@ -66,6 +65,7 @@ node -e "import('./index.js').then(({default: jsdocToTs}) => {
   }))
 })"
 ```
+NOTE: You need to install mkdirp module in jsdoc-to-ts by yourself.
 
 You also have to configure the app to resolve the generated typings by adding the following to the `tsconfig.json`.
 
