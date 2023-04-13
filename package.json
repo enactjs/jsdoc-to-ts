@@ -30,10 +30,10 @@
   "dependencies": {
     "documentation": "^14.0.1",
     "glob": "^8.1.0",
-    "jsonata": "^2.0.1",
+    "jsonata": "^2.0.2",
     "loglevel": "^1.8.1",
-    "minimist": "^1.2.7",
-    "prettier": "^2.8.3"
+    "minimist": "^1.2.8",
+    "prettier": "^2.8.7"
   },
   "devDependencies": {
     "chai": "^4.3.7",
