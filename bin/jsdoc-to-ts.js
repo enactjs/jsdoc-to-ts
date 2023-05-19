@@ -40,17 +40,21 @@ function displayHelp () {
 // CLI execution mainline
 
 const opts = minimist(process.argv.slice(2), {
-	string: ['output'],
-	default: {output: '.'},
-	alias: {o: 'output', h: 'help'}
+	string: ['ignore', 'output', 'outputPath'],
+	default: {
+		ignore: ['node_modules', 'ilib', 'build', 'dist', 'samples', 'coverage', 'tests'],
+		output: fs.writeFileSync,
+		outputPath: '.'
+	},
+	alias: {o: 'output', op: 'outputPath', h: 'help', i: 'ignore'}
 });
 
 if (opts.help) displayHelp();
-
+console.log(opts.ignore)
 jsdocToTs({
 	package: opts._[0] || '.',
-	output: fs.writeFileSync,
-	ignore: ['node_modules', 'ilib', 'build', 'dist', 'samples', 'coverage', 'tests'],
+	output: opts.output,
+	ignore: typeof opts.ignore === 'string' ? opts.ignore.split(' ') : opts.ignore,
 	importMap: {
 		core: '@enact/core',
 		ui: '@enact/ui',
@@ -62,5 +66,5 @@ jsdocToTs({
 		agate: '@enact/agate',
 		sandstone: '@enact/sandstone'
 	},
-	outputPath: opts.output
+	outputPath: opts.outputPath
 });
