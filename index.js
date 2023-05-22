@@ -47,7 +47,7 @@ function getSourceFiles (base, ignore) {
 				reject(er);
 				return;
 			}
-console.log(typeof ignore)
+console.log(ignore)
 			const entries = files
 				.filter(name => !ignore.find(i => name.includes(i)))
 				.map(relativePackageJsonPath => {
