@@ -40,31 +40,32 @@ function displayHelp () {
 // CLI execution mainline
 
 const opts = minimist(process.argv.slice(2), {
-	string: ['ignore', 'output', 'outputPath'],
+	string: ['ignore', 'importMap', 'output', 'outputPath'],
 	default: {
 		ignore: ['node_modules', 'ilib', 'build', 'dist', 'samples', 'coverage', 'tests'],
+		importMap: {
+			core: '@enact/core',
+			ui: '@enact/ui',
+			spotlight: '@enact/spotlight',
+			i18n: '@enact/i18n',
+			webos: '@enact/webos',
+			moonstone: '@enact/moonstone',
+			'moonstone-ez': '@enact/moonstone-ez',
+			agate: '@enact/agate',
+			sandstone: '@enact/sandstone'
+		},
 		output: fs.writeFileSync,
 		outputPath: '.'
 	},
-	alias: {o: 'output', op: 'outputPath', h: 'help', i: 'ignore'}
+	alias: {o: 'output', p: 'outputPath', h: 'help', i: 'ignore', m: 'importMap'}
 });
 
 if (opts.help) displayHelp();
-console.log(opts.ignore)
+console.log(opts.ignore.split(' '))
 jsdocToTs({
 	package: opts._[0] || '.',
 	output: opts.output,
 	ignore: typeof opts.ignore === 'string' ? opts.ignore.split(' ') : opts.ignore,
-	importMap: {
-		core: '@enact/core',
-		ui: '@enact/ui',
-		spotlight: '@enact/spotlight',
-		i18n: '@enact/i18n',
-		webos: '@enact/webos',
-		moonstone: '@enact/moonstone',
-		'moonstone-ez': '@enact/moonstone-ez',
-		agate: '@enact/agate',
-		sandstone: '@enact/sandstone'
-	},
+	importMap: typeof opts.importMap === 'string' ? JSON.parse(opts.importMap) : opts.importMap,
 	outputPath: opts.outputPath
 });
