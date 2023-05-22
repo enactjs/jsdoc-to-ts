@@ -61,7 +61,7 @@ const opts = minimist(process.argv.slice(2), {
 });
 
 if (opts.help) displayHelp();
-console.log(opts.ignore.split(' '))
+
 jsdocToTs({
 	package: opts._[0] || '.',
 	output: opts.output,
