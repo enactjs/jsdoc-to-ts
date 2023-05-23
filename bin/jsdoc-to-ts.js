@@ -65,7 +65,7 @@ if (opts.help) displayHelp();
 jsdocToTs({
 	package: opts._[0] || '.',
 	output: opts.output,
-	ignore: typeof opts.ignore === 'string' ? opts.ignore.split(' ') : opts.ignore,
+	ignore: typeof opts.ignore === 'string' ? JSON.parse(opts.ignore) : opts.ignore,
 	importMap: typeof opts.importMap === 'string' ? JSON.parse(opts.importMap) : opts.importMap,
 	outputPath: opts.outputPath
 });
