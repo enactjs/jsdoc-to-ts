@@ -29,7 +29,9 @@ function displayHelp () {
 	console.log('                      (cwd by default)');
 	console.log();
 	console.log('  Options');
-	console.log('    -o, --output      Output path for .ts files');
+	console.log('    -i, --ignore      paths to be ignored');
+	console.log('    -m, --importMap   packages to be used by each module');
+	console.log('    -p, --outputPath  Output path for .ts files');
 	console.log('                      (cwd by default)');
 	console.log('    -h, --help        Display help information');
 	console.log();
