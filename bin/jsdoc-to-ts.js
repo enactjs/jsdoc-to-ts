@@ -31,7 +31,7 @@ function displayHelp () {
 	console.log('  Options');
 	console.log('    -i, --ignore      paths to be ignored');
 	console.log('    -m, --importMap   packages to be used by each module');
-	console.log('    -p, --outputPath  Output path for .ts files');
+	console.log('    -o, --outputPath  Output path for .ts files');
 	console.log('                      (cwd by default)');
 	console.log('    -h, --help        Display help information');
 	console.log();
@@ -42,7 +42,7 @@ function displayHelp () {
 // CLI execution mainline
 
 const opts = minimist(process.argv.slice(2), {
-	string: ['ignore', 'importMap', 'output', 'outputPath'],
+	string: ['help', 'ignore', 'importMap', 'outputPath'],
 	default: {
 		ignore: ['node_modules', 'ilib', 'build', 'dist', 'samples', 'coverage', 'tests'],
 		importMap: {
@@ -56,17 +56,16 @@ const opts = minimist(process.argv.slice(2), {
 			agate: '@enact/agate',
 			sandstone: '@enact/sandstone'
 		},
-		output: fs.writeFileSync,
 		outputPath: '.'
 	},
-	alias: {o: 'output', p: 'outputPath', h: 'help', i: 'ignore', m: 'importMap'}
+	alias: {h: 'help', i: 'ignore', m: 'importMap', o: 'outputPath'}
 });
 
 if (opts.help) displayHelp();
 
 jsdocToTs({
 	package: opts._[0] || '.',
-	output: opts.output,
+	output: fs.writeFileSync,
 	ignore: typeof opts.ignore === 'string' ? JSON.parse(opts.ignore) : opts.ignore,
 	importMap: typeof opts.importMap === 'string' ? JSON.parse(opts.importMap) : opts.importMap,
 	outputPath: opts.outputPath
