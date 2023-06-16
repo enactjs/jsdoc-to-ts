@@ -81,7 +81,7 @@ You also have to configure the app to resolve the generated typings by adding th
     }
 ```
 
-## Usage
+## Usage with cli option on installation path
 
 Assuming jsdoc-to-ts is installed and linked globally on the current device, and we want to run the command in one of the installed Enact packages (core, ui, i18n, etc.) folder:
 
