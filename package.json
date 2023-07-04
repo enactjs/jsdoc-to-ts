@@ -29,13 +29,14 @@
   },
   "dependencies": {
     "documentation": "^14.0.2",
-    "glob": "^8.1.0",
+    "glob": "^10.3.1",
     "jsonata": "^2.0.3",
     "loglevel": "^1.8.1",
     "minimist": "^1.2.8",
     "prettier": "^2.8.8"
   },
   "devDependencies": {
+    "@enact/jsdoc-to-ts": "^0.1.4",
     "chai": "^4.3.7",
     "eslint-config-enact-proxy": "^1.0.5",
     "mocha": "^10.2.0",

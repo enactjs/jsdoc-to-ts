@@ -1,5 +1,5 @@
 import fs from 'fs';
-import glob from 'glob';
+import {glob} from 'glob';
 import path from 'path';
 import {build} from 'documentation';
 import log from 'loglevel';
