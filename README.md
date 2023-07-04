@@ -4,26 +4,26 @@
 
 > Note. It's an experimental module.
 
-### Installation
-
-```
-npm install --save-dev @enact/jsdoc-to-ts
-```
-
 **IMPORTANT:** jsdoc-to-ts 1.0.0 is the ESM. After upgrading from 0.1.x, please change the previous command as follows.
 ```bash
 // Before
 node -e "['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => require('.')({
   ...
-}))"
+}))" "(path of jsdoc-to-ts)"
 
 // After
-node -e "import('(jsdoc-to-ts's path)/index.js').then(({default: jsdocToTs}) => {
+node -e "import('(path of jsdoc-to-ts)/index.js').then(({default: jsdocToTs}) => {
   ['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => jsdocToTs({
     ...
 })"
 ```
 Or, try a simple CLI command. [Read more.](./README.md#usage-with-cli-option-on-installation-path)
+
+### Installation
+
+```
+npm install --save-dev @enact/jsdoc-to-ts
+```
 
 ## Usage
 
