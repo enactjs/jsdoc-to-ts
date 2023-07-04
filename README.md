@@ -10,6 +10,21 @@
 npm install --save-dev @enact/jsdoc-to-ts
 ```
 
+**IMPORTANT:** jsdoc-to-ts 1.0.0 is the ESM. After upgrading from 0.1.x, please change the previous command as follows.
+```bash
+// Before
+node -e "['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => require('.')({
+  ...
+}))"
+
+// After
+node -e "import('(jsdoc-to-ts's path)/index.js').then(({default: jsdocToTs}) => {
+  ['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => jsdocToTs({
+    ...
+})"
+```
+Or, try a simple CLI command. [Read more.](./README.md#usage-with-cli-option-on-installation-path)
+
 ## Usage
 
 Assuming this directory is a peer of the Enact source and you want to write this into an installed (from npm) version of enact:
