@@ -1,6 +1,6 @@
 # Change Log
 
-## [unreleased]
+## [1.0.0] (July 5, 2023)
 
 * Migrated project to ESM.
 * Updated `jsonata` dependency to version 2.x and refactored code to use async functions.
