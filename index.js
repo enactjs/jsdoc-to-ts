@@ -42,33 +42,30 @@ async function parse ({path: modulePath, files, format, importMap, output}) {
 
 function getSourceFiles (base, ignore) {
 	return new Promise((resolve, reject) => {
-		glob('**/package.json', { cwd: base })
-			.then(files => {
-				console.log(files);
-				const entries = files
-					.filter(name => !ignore.find(i => name.includes(i)))
-					.map(relativePackageJsonPath => {
-						const packageJsonPath = path.join(base, relativePackageJsonPath);
-						const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-						const dirPath = path.dirname(path.resolve(path.dirname(packageJsonPath), pkg.main));
+		glob('**/package.json', { cwd: base }).then(files => {
 
-						return {
-							package: pkg,
-							path: path.relative(base, dirPath),
-							files: fs.readdirSync(dirPath)
-								.map(p => path.join(dirPath, p))
-								.filter(isScript)
-						};
-					});
+			const entries = files
+				.filter(name => !ignore.find(i => name.includes(i)))
+				.map(relativePackageJsonPath => {
+					const packageJsonPath = path.join(base, relativePackageJsonPath);
+					const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+					const dirPath = path.dirname(path.resolve(path.dirname(packageJsonPath), pkg.main));
 
-				resolve(entries);
-			})
-			.catch((er) => {
-				reject(er);
-				return;
-			});
+					return {
+						package: pkg,
+						path: path.relative(base, dirPath),
+						files: fs.readdirSync(dirPath)
+							.map(p => path.join(dirPath, p))
+							.filter(isScript)
+					};
+				});
 
-
+			resolve(entries);
+		})
+		.catch((er) => {
+			reject(er);
+			return;
+		});
 	});
 }
 
@@ -88,7 +85,6 @@ export default function main ({
 	log.setLevel(logLevel);
 
 	getSourceFiles(path.resolve(base), ignore).then(files => {
-		console.log(files)
 		files.forEach(moduleEntry => {
 			parse({
 				...moduleEntry,
