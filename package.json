@@ -6,6 +6,9 @@
   "author": "Roy Sutton <roy.sutton@lge.com>",
   "repository": "https://github.com/enactjs/jsdoc-to-ts",
   "license": "Apache-2.0",
+  "engines": {
+    "node": ">=16.13.0"
+  },
   "type": "module",
   "bin": {
     "jsdoc-to-ts": "./bin/jsdoc-to-ts.js"
