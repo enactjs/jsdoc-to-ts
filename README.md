@@ -4,6 +4,23 @@
 
 > Note. It's an experimental module.
 
+**IMPORTANT:** jsdoc-to-ts 1.0.0 is the ESM. After upgrading from 0.1.x, please change the previous command as follows.
+```bash
+// Before
+node -e "['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => require('.')({
+  ...
+}))" "(path of jsdoc-to-ts)"
+
+// After
+node -e "import('(path of jsdoc-to-ts)/index.js').then(({default: jsdocToTs}) => {
+  ['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => jsdocToTs({
+    ...
+})"
+```
+NOTE: The script requires at least Node.js 13.2.0. or later.
+
+Or, try a simple CLI command. [Read more.](./README.md#usage-with-cli-option-on-installation-path)
+
 ### Installation
 
 ```
