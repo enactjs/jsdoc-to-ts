@@ -1,8 +1,25 @@
 ## @enact/jsdoc-to-ts [![NPM](https://img.shields.io/npm/v/@enact/jsdoc-to-ts.svg?style=flat-square)](https://www.npmjs.com/package/@enact/jsdoc-to-ts)
- 
+
 > Converts JSDoc comments into TypeScript d.ts files
 
 > Note. It's an experimental module.
+
+**IMPORTANT:** jsdoc-to-ts 1.0.0 is the ESM. After upgrading from 0.1.x, please change the previous command as follows.
+```bash
+// Before
+node -e "['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => require('.')({
+  ...
+}))" "(path of jsdoc-to-ts)"
+
+// After
+node -e "import('(path of jsdoc-to-ts)/index.js').then(({default: jsdocToTs}) => {
+  ['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => jsdocToTs({
+    ...
+})"
+```
+NOTE: The script requires at least Node.js 13.2.0. or later.
+
+Or, try a simple CLI command. [Read more.](./README.md#usage-with-cli-option-on-installation-path)
 
 ### Installation
 
@@ -15,51 +32,57 @@ npm install --save-dev @enact/jsdoc-to-ts
 Assuming this directory is a peer of the Enact source and you want to write this into an installed (from npm) version of enact:
 
 ```bash
-node -e "['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => require('.')({
-  package: '../enact/packages/' + p,
-  output: require('fs').writeFileSync,
-  ignore: ['node_modules', 'ilib'],
-  importMap: {
-    ui: '@enact/ui',
-    moonstone: '@enact/moonstone',
-    core: '@enact/core',
-    webos: '@enact/webos',
-    spotlight: '@enact/spotlight',
-    i18n: '@enact/i18n'
-  },
-  outputPath: '<path to installation>/node_modules/@enact/' + p
-}))"
+node -e "import('./index.js').then(({default: jsdocToTs}) => {
+  ['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => jsdocToTs({
+    package: '../enact/packages/' + p,
+    output: require('fs').writeFileSync,
+    ignore: ['node_modules', 'ilib'],
+    importMap: {
+      ui: '@enact/ui',
+      moonstone: '@enact/moonstone',
+      core: '@enact/core',
+      webos: '@enact/webos',
+      spotlight: '@enact/spotlight',
+      i18n: '@enact/i18n'
+    },
+    outputPath: '<path to installation>/node_modules/@enact/' + p
+  }))
+})"
 ```
-NOTE: Replace `<path to installation>` with the directory you wish to update.
+NOTE: Replace `<path to installation>` with the directory you wish to update. The script requires at least Node.js 13.2.0. or later.
 
 ## Working with Linked Enact
 
 The following command will parse the Enact source into a local `types` directory so you can use TypeScript with linked Enact:
+
 ```bash
-node -e "['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => require('.')({
-  package: '<path to enact>/packages/' + p,
-  output: (filepath, content) => {
-    const path = require('path');
-    const dir = path.dirname(filepath);
-    const wfs = require('fs').writeFileSync;
-    // recursively create the path to the folder in types
-    require('mkdirp').sync(dir);
-    // write a package.json with a types member pointing to the .d.ts file
-    wfs(path.join(dir, 'package.json'), '{\"types\": \"' + path.basename(filepath) + '\"}');
-    // write the .d.ts file
-    wfs(filepath, content);
-  },
-  importMap: {
-    ui: '@enact/ui',
-    moonstone: '@enact/moonstone',
-    core: '@enact/core',
-    webos: '@enact/webos',
-    spotlight: '@enact/spotlight',
-    i18n: '@enact/i18n'
-  },
-  outputPath: '<path to installation>/types/@enact/' + p
-}))"
+node -e "import('./index.js').then(({default: jsdocToTs}) => {
+    ['core', 'ui', 'moonstone', 'i18n', 'webos', 'spotlight'].forEach(p => jsdocToTs({
+    package: '<path to enact>/packages/' + p,
+    output: (filepath, content) => {
+      const path = require('path');
+      const dir = path.dirname(filepath);
+      const wfs = require('fs').writeFileSync;
+      // recursively create the path to the folder in types
+      require('mkdirp').sync(dir);
+      // write a package.json with a types member pointing to the .d.ts file
+      wfs(path.join(dir, 'package.json'), '{\"types\": \"' + path.basename(filepath) + '\"}');
+      // write the .d.ts file
+      wfs(filepath, content);
+    },
+    importMap: {
+      ui: '@enact/ui',
+      moonstone: '@enact/moonstone',
+      core: '@enact/core',
+      webos: '@enact/webos',
+      spotlight: '@enact/spotlight',
+      i18n: '@enact/i18n'
+    },
+    outputPath: '<path to installation>/types/@enact/' + p
+  }))
+})"
 ```
+NOTE: You may need to install `mkdirp` module in `jsdoc-to-ts` by yourself.
 
 You also have to configure the app to resolve the generated typings by adding the following to the `tsconfig.json`.
 
@@ -75,6 +98,14 @@ You also have to configure the app to resolve the generated typings by adding th
     }
 ```
 
+## Usage with cli option on installation path
+
+Assuming jsdoc-to-ts is installed and linked globally on the current device, and we want to run the command in one of the installed Enact packages (core, ui, i18n, etc.) folder:
+
+```bash
+jsdoc-to-ts --ignore='["node_modules", "ilib", "build", "docs", "tests", "samples"]' --importMap='{"core":"@enact/core","ui":"@enact/ui","spotlight":"@enact/spotlight","i18n":"@enact/i18n","webos":"@enact/webos","moonstone":"@enact/moonstone","agate":"@enact/agate","sandstone":"@enact/sandstone"}' --outputPath='.'
+```
+
 ## Assumptions
 
 Many assumptions, currently:
@@ -88,7 +119,7 @@ Many assumptions, currently:
 Unless otherwise specified, all content, including all source code files and
 documentation files in this repository are:
 
-Copyright (c) 2018-2021 LG Electronics
+Copyright (c) 2018-2023 LG Electronics
 
 Unless otherwise specified or set forth in the NOTICE file, all content,
 including all source code files and documentation files in this repository are:

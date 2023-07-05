@@ -2,10 +2,10 @@
 /**
  * Rendering functions and the default set of renderers
  */
-const {escapeClassMember, hasRequiredTag} = require('./utils');
-const {renderDescription} = require('./description');
-const {renderParam} = require('./params');
-const {renderType, extractTypeImports} = require('./types');
+import {escapeClassMember, hasRequiredTag} from './utils.js';
+import {renderDescription} from './description.js';
+import {renderParam} from './params.js';
+import {renderType, extractTypeImports} from './types.js';
 
 function isExports (tag) {
 	return tag.title === 'exports';
@@ -24,7 +24,7 @@ function exportDeclarations (moduleName) {
 	};
 }
 
-function defaultModuleRenderer ({section, parent, root, importMap, log, renderer}) {
+export async function defaultModuleRenderer ({section, parent, root, importMap, log, renderer}) {
 	if (parent !== root) {
 		log.warn(`Unexpected module ${section.name}`);
 		return;
@@ -53,7 +53,7 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 
 	const body = `
 		${
-			renderer({section: section.members.static, imports, export: true})
+		(await renderer({section: section.members.static, imports, export: true}))
 				.filter(Boolean)
 				.join('\n')
 		}
@@ -91,8 +91,6 @@ function defaultModuleRenderer ({section, parent, root, importMap, log, renderer
 
 	return `${header}${body}`;
 }
-
-exports.defaultModuleRenderer = defaultModuleRenderer;
 
 function uniq (arr) {
 	return arr.reduce((r, v) => {
@@ -161,7 +159,7 @@ const formatFunction = (section, exp, instance, name, templates, params, ret) =>
 			`${name}${templates}${params}: ${ret};`;
 };
 
-function defaultFunctionRenderer ({section, export: exp = false, instance = false, typeRenderer = renderType}) {
+export function defaultFunctionRenderer ({section, export: exp = false, instance = false, typeRenderer = renderType}) {
 	let returns = 'void';
 
 	const parameters = section.params;
@@ -192,9 +190,7 @@ function defaultFunctionRenderer ({section, export: exp = false, instance = fals
 	return formatFunction(section, exp, instance, section.name, templates, parametersOutput, returns);
 }
 
-exports.defaultFunctionRenderer = defaultFunctionRenderer;
-
-function defaultConstantRenderer ({section, export: exp, renderer}) {
+export async function defaultConstantRenderer ({section, export: exp, renderer}) {
 	const declaration = `${renderDescription(section)}${exp ? 'export ' : ''}declare const ${section.name}:`;
 	if (section.members.static.length === 0) {
 		return `${declaration} ${renderType(section.type)};`;
@@ -202,27 +198,25 @@ function defaultConstantRenderer ({section, export: exp, renderer}) {
 
 	return `${declaration} {
 		${
-			renderer({section: section.members.static, instance: true})
+		(await renderer({section: section.members.static, instance: true}))
 				.filter(Boolean)
 				.join('\n')
 		}
 	};`;
 }
 
-exports.defaultConstantRenderer = defaultConstantRenderer;
-
-function renderInterface (name, members, interfaceBase, typeRenderer, imports, omits) {
+async function renderInterface (name, members, interfaceBase, typeRenderer, imports, omits) {
 	if (interfaceBase && omits && omits.length) {
 		const omitString = '"' + omits.join('"|"') + '"';
 		interfaceBase = `Omit<${interfaceBase}, ${omitString}>`;
 	}
 
 	return `export interface ${name} ${interfaceBase ? `extends ${interfaceBase}` : ''} {
-		${members.map(member => {
-			const required = hasRequiredTag(member) ? '' : '?';
-			extractTypeImports(member.type, imports);
-			return `${renderDescription(member)}${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
-		}).join('\n')}
+		${(await Promise.all(members.map(async member => {
+		const required = await hasRequiredTag(member) ? '' : '?';
+		extractTypeImports(member.type, imports);
+		return `${renderDescription(member)}${escapeClassMember(member.name)}${required}: ${typeRenderer(member.type)};`;
+	}))).join('\n')}
 	}`;
 }
 
@@ -259,17 +253,17 @@ function calcPropsBaseName ({imports, section}) {
 	}, '');
 }
 
-function defaultHocRenderer ({section, imports, typeRenderer = renderType}) {
+export async function defaultHocRenderer ({section, imports, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const config = section.members.static.find(member => member.tags.find(tag => tag.title === 'hocconfig'));
 	const hasConfig = config && config.members.static.length > 0;
 
 	const propsBase = calcPropsBaseName({imports, section});
 	const propsInterfaceName = `${section.name}Props`;
-	const propsInterface = renderInterface(propsInterfaceName, props, propsBase, typeRenderer);
+	const propsInterface = await renderInterface(propsInterfaceName, props, propsBase, typeRenderer);
 
 	const configInterfaceName = `${section.name}Config`;
-	const configInterface = !hasConfig ? '' : renderInterface(configInterfaceName, config.members.static, 'Object', typeRenderer);
+	const configInterface = !hasConfig ? '' : await renderInterface(configInterfaceName, config.members.static, 'Object', typeRenderer);
 
 	const returnType = `React.ComponentType<P & ${propsInterfaceName}>`;
 	return `${configInterface}
@@ -286,16 +280,14 @@ function defaultHocRenderer ({section, imports, typeRenderer = renderType}) {
 	`;
 }
 
-exports.defaultHocRenderer = defaultHocRenderer;
-
 // TODO: Add some hinting so we can derive the proper HTML Element to base props on (e.g. Input -> HTMLInputElement)
-function defaultComponentRenderer ({section, renderer, imports, typeRenderer = renderType}) {
+export async function defaultComponentRenderer ({section, renderer, imports, typeRenderer = renderType}) {
 	const props = section.members.instance.filter(member => !member.kind);
 	const funcs = section.members.instance.filter(member => member.kind === 'function');
 	const omits = section.tags.reduce((res, tag) => tag.title === 'omit' ? res.concat(tag.description) : res, []);
 	const propsBase = calcPropsBaseName({imports, section});
 	const propsInterfaceName = `${section.name}Props`;
-	const propsInterface = renderInterface(propsInterfaceName, props, propsBase, typeRenderer, imports, omits);
+	const propsInterface = await renderInterface(propsInterfaceName, props, propsBase, typeRenderer, imports, omits);
 	let staticMembersDescriptionArray = [], staticMembersDescription = '';
 
 	imports.add({
@@ -312,22 +304,21 @@ function defaultComponentRenderer ({section, renderer, imports, typeRenderer = r
 		}
 		staticMembersDescription = staticMembersDescriptionArray.reduce((acc, current) => acc + current + '\n');
 	}
+
 	return `${propsInterface}
 		${renderDescription(section)}
 		export class ${section.name} extends React.Component<Merge<React.HTMLProps<HTMLElement>, ${propsInterfaceName}>> {
 			${
-				renderer({section: funcs, export: false, instance: true})
-					.filter(Boolean)
-					.join('\n')
-			}
+		(await renderer({section: funcs, export: false, instance: true}))
+			.filter(Boolean)
+			.join('\n')
+	}
 			${staticMembersDescription}
 		}
 	`;
 }
 
-exports.defaultComponentRenderer = defaultComponentRenderer;
-
-function defaultClassRenderer ({section, export: exp, renderer}) {
+export async function defaultClassRenderer ({section, export: exp, renderer}) {
 	return `
 		${renderDescription(section)}
 		${exp ? 'export ' : ''}declare class ${section.name} {
@@ -335,16 +326,14 @@ function defaultClassRenderer ({section, export: exp, renderer}) {
 			`constructor(${section.constructorComment.params.map(prop => renderParam(prop, renderType)).join(', ')});`
 		) : ''}
 		${
-			renderer({section: section.members.instance, instance: true})
+			(await renderer({section: section.members.instance, instance: true}))
 				.filter(Boolean)
 				.join('\n')
 		}
 	};\n`;
 }
 
-exports.defaultClassRenderer = defaultClassRenderer;
-
-function defaultTypedefRenderer ({section, export: exp}) {
+export function defaultTypedefRenderer ({section, export: exp}) {
 	let outputStr;
 
 	if (section.type.name === 'Object') {
@@ -364,8 +353,6 @@ function defaultTypedefRenderer ({section, export: exp}) {
 	return `${renderDescription(section)}${outputStr}`;
 }
 
-exports.defaultTypedefRenderer = defaultTypedefRenderer;
-
 const defaultRenderers = {
 	'class': defaultClassRenderer,
 	'module': defaultModuleRenderer,
@@ -377,8 +364,6 @@ const defaultRenderers = {
 	'member': defaultConstantRenderer
 };
 
-function getDefaultRenderers (overrides = {}) {
+export function getDefaultRenderers (overrides = {}) {
 	return Object.assign({}, defaultRenderers, overrides);
 }
-
-exports.getDefaultRenderers = getDefaultRenderers;

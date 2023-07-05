@@ -29,12 +29,8 @@ function joinValues (node) {
 	return v || '';
 }
 
-function renderDescription (section) {
+export function renderDescription (section) {
 	// trim off extra trailing newlines (often added by a final paragraph node)
 	const desc = joinValues(section.description).replace(/\n \*$/g, '\n');
 	return desc ? `/**${desc} */\n` : '';
 }
-
-module.exports = {
-	renderDescription
-};

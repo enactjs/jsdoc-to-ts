@@ -4,19 +4,22 @@
 
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const minimist = require('minimist');
-const jsdocToTs = require('..');
+import fs from 'fs';
+import {fileURLToPath} from 'url';
+import path from 'path';
+import minimist from 'minimist';
+import jsdocToTs from '../index.js';
 
 // Uncaught error handler
 process.on('uncaughtException', err => console.error(err.stack));
 
 function displayHelp () {
-	let e = 'node ' + path.relative(process.cwd(), __filename);
-	if (require.main !== module) e = 'jsdoc-to-ts';
+	const modulePath = fileURLToPath(import.meta.url);
+	const pkg = JSON.parse(fs.readFileSync(path.resolve(modulePath + '../../../package.json'), 'utf-8'));
+	let e = 'node ' + path.relative(process.cwd(), modulePath);
+	if (process.argv[1] !== modulePath) e = 'jsdoc-to-ts';
 
-	console.log('  jsdoc-to-ts v' + require('../package.json').version);
+	console.log('  jsdoc-to-ts v' + pkg.version);
 	console.log();
 	console.log('  Usage');
 	console.log(`    ${e} [options] [source]`);
@@ -26,7 +29,9 @@ function displayHelp () {
 	console.log('                      (cwd by default)');
 	console.log();
 	console.log('  Options');
-	console.log('    -o, --output      Output path for .ts files');
+	console.log('    -i, --ignore      paths to be ignored');
+	console.log('    -m, --importMap   packages to be used by each module');
+	console.log('    -o, --outputPath  Output path for .ts files');
 	console.log('                      (cwd by default)');
 	console.log('    -h, --help        Display help information');
 	console.log();
@@ -37,9 +42,23 @@ function displayHelp () {
 // CLI execution mainline
 
 const opts = minimist(process.argv.slice(2), {
-	string: ['output'],
-	default: {output: '.'},
-	alias: {o: 'output', h: 'help'}
+	string: ['help', 'ignore', 'importMap', 'outputPath'],
+	default: {
+		ignore: ['node_modules', 'ilib', 'build', 'dist', 'samples', 'coverage', 'tests'],
+		importMap: {
+			core: '@enact/core',
+			ui: '@enact/ui',
+			spotlight: '@enact/spotlight',
+			i18n: '@enact/i18n',
+			webos: '@enact/webos',
+			moonstone: '@enact/moonstone',
+			'moonstone-ez': '@enact/moonstone-ez',
+			agate: '@enact/agate',
+			sandstone: '@enact/sandstone'
+		},
+		outputPath: '.'
+	},
+	alias: {h: 'help', i: 'ignore', m: 'importMap', o: 'outputPath'}
 });
 
 if (opts.help) displayHelp();
@@ -47,17 +66,7 @@ if (opts.help) displayHelp();
 jsdocToTs({
 	package: opts._[0] || '.',
 	output: fs.writeFileSync,
-	ignore: ['node_modules', 'ilib', 'build', 'dist', 'samples', 'coverage', 'tests'],
-	importMap: {
-		core: '@enact/core',
-		ui: '@enact/ui',
-		spotlight: '@enact/spotlight',
-		i18n: '@enact/i18n',
-		webos: '@enact/webos',
-		moonstone: '@enact/moonstone',
-		'moonstone-ez': '@enact/moonstone-ez',
-		agate: '@enact/agate',
-		sandstone: '@enact/sandstone'
-	},
-	outputPath: opts.output
+	ignore: typeof opts.ignore === 'string' ? JSON.parse(opts.ignore) : opts.ignore,
+	importMap: typeof opts.importMap === 'string' ? JSON.parse(opts.importMap) : opts.importMap,
+	outputPath: opts.outputPath
 });

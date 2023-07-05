@@ -1,5 +1,11 @@
 # Change Log
 
+## [1.0.0] (July 5, 2023)
+
+* Migrated project to ESM.
+* Updated `jsonata` dependency to version 2.x and refactored code to use async functions.
+* Added more options to jsdoc-to-ts CLI: `ignore`, `importMap`, `output`, `outputPath`.
+
 ## [0.1.4] (March 3, 2023)
 
 * Added the rendering of static members for a component.

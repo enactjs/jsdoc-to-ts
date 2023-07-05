@@ -1,10 +1,11 @@
-const fs = require('fs');
-const glob = require('glob');
-const path = require('path');
-const log = require('loglevel');
-const prettier = require('prettier');
+import fs from 'fs';
+import glob from 'glob';
+import path from 'path';
+import {build} from 'documentation';
+import log from 'loglevel';
+import prettier from 'prettier';
 
-const {makeParser} = require('./src/parsers');
+import {makeParser} from './src/parsers.js';
 
 const sourceExtension = /\.jsx?$/i;
 
@@ -13,8 +14,7 @@ function isScript (filePath) {
 }
 
 async function parse ({path: modulePath, files, format, importMap, output}) {
-	const documentation = await import('documentation');
-	const encodeModule = makeParser();
+	const encodeModule = await makeParser();
 
 	if (!files || files.length === 0) {
 		log.info(`No source files found for ${modulePath}.`);
@@ -22,9 +22,9 @@ async function parse ({path: modulePath, files, format, importMap, output}) {
 	}
 
 	log.info(`Parsing ${modulePath} ...`);
-	documentation.build(files, {shallow: true}).then(
-		(root) => {
-			let result = encodeModule({root, section: root, parent: root, importMap, log}).join('\n');
+	build(files, {shallow: true}).then(
+		async (root) => {
+			let result = (await encodeModule({root, section: root, parent: root, importMap, log})).join('\n');
 			const firstNamedEntry = root.find(entry => entry.name);
 			let moduleName = firstNamedEntry ? firstNamedEntry.name : '';
 
@@ -52,7 +52,7 @@ function getSourceFiles (base, ignore) {
 				.filter(name => !ignore.find(i => name.includes(i)))
 				.map(relativePackageJsonPath => {
 					const packageJsonPath = path.join(base, relativePackageJsonPath);
-					const pkg = require(packageJsonPath);
+					const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
 					const dirPath = path.dirname(path.resolve(path.dirname(packageJsonPath), pkg.main));
 
 					return {
@@ -73,7 +73,7 @@ function isRequired (name) {
 	throw new Error(`${name} is a required argument`);
 }
 
-function main ({
+export default function main ({
 	output = isRequired('output'),
 	ignore = ['node_modules', 'build', 'dist', 'coverage'],
 	package: base = isRequired('package'),
@@ -101,5 +101,3 @@ function main ({
 		});
 	});
 }
-
-module.exports = main;

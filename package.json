@@ -1,11 +1,12 @@
 {
   "name": "@enact/jsdoc-to-ts",
-  "version": "0.1.4",
+  "version": "1.0.0",
   "description": "Converts inline jsdoc comments to TypeScript .d.ts files",
   "main": "index.js",
   "author": "Roy Sutton <roy.sutton@lge.com>",
   "repository": "https://github.com/enactjs/jsdoc-to-ts",
   "license": "Apache-2.0",
+  "type": "module",
   "bin": {
     "jsdoc-to-ts": "./bin/jsdoc-to-ts.js"
   },
@@ -27,12 +28,12 @@
     }
   },
   "dependencies": {
-    "documentation": "^14.0.1",
+    "documentation": "^14.0.2",
     "glob": "^8.1.0",
-    "jsonata": "^1.8.6",
+    "jsonata": "^2.0.3",
     "loglevel": "^1.8.1",
-    "minimist": "^1.2.7",
-    "prettier": "^2.8.3"
+    "minimist": "^1.2.8",
+    "prettier": "^2.8.8"
   },
   "devDependencies": {
     "chai": "^4.3.7",

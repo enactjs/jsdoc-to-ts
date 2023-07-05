@@ -140,14 +140,14 @@ const typeRenderers = {
 	UndefinedLiteral: renderVoid,
 	UnionType: renderUnionType
 };
-function renderType (type, templates) {
+export function renderType (type, templates) {
 	if (!type || !typeRenderers[type.type]) {
 		return 'any';
 	}
 	return typeRenderers[type.type](type, templates);
 }
 
-function extractTypeImports (type, imports) {
+export function extractTypeImports (type, imports) {
 	if (type && type.type === 'NameExpression') {
 		const importMatch = type.name.match(/(\w+?)\/(\w+)\.(\w+)/i);
 		if (importMatch) {
@@ -165,5 +165,3 @@ function extractTypeImports (type, imports) {
 		}
 	}
 }
-exports.renderType = renderType;
-exports.extractTypeImports = extractTypeImports;
