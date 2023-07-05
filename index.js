@@ -40,35 +40,6 @@ async function parse ({path: modulePath, files, format, importMap, output}) {
 	});
 }
 
-// function getSourceFiles (base, ignore) {
-// 	return new Promise((resolve, reject) => {
-// 		glob('**/package.json', {cwd: base}, (er, files) => {
-// 			if (er) {
-// 				reject(er);
-// 				return;
-// 			}
-//
-// 			const entries = files
-// 				.filter(name => !ignore.find(i => name.includes(i)))
-// 				.map(relativePackageJsonPath => {
-// 					const packageJsonPath = path.join(base, relativePackageJsonPath);
-// 					const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-// 					const dirPath = path.dirname(path.resolve(path.dirname(packageJsonPath), pkg.main));
-//
-// 					return {
-// 						package: pkg,
-// 						path: path.relative(base, dirPath),
-// 						files: fs.readdirSync(dirPath)
-// 							.map(p => path.join(dirPath, p))
-// 							.filter(isScript)
-// 					};
-// 				});
-//
-// 			resolve(entries);
-// 		});
-// 	});
-// }
-
 function getSourceFiles (base, ignore) {
 	return new Promise((resolve, reject) => {
 		glob('**/package.json', { cwd: base })
