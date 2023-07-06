@@ -43,7 +43,6 @@ async function parse ({path: modulePath, files, format, importMap, output}) {
 function getSourceFiles (base, ignore) {
 	return new Promise((resolve, reject) => {
 		glob('**/package.json', { cwd: base }).then(files => {
-
 			const entries = files
 				.filter(name => !ignore.find(i => name.includes(i)))
 				.map(relativePackageJsonPath => {
