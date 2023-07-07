@@ -2,7 +2,7 @@
 
 ## [unreleased]
 
-* Updated `glob` to the latest major version `^10.3.1` and refactored code to use async functions. 
+* Updated `glob` to the latest major version `^10.3.1` and refactored code to use promises instead of callbacks. 
 
 ## [1.0.0] (July 5, 2023)
 
