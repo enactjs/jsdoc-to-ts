@@ -40,32 +40,38 @@ async function parse ({path: modulePath, files, format, importMap, output}) {
 	});
 }
 
-async function  getSourceFiles (base, ignore) {
-	const files = await glob('**/package.json', {cwd: base});
-	const entries = files
-		.filter(name => !ignore.find(i => name.includes(i)))
-		.map(relativePackageJsonPath => {
-			const packageJsonPath = path.join(base, relativePackageJsonPath);
-			const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-			const dirPath = path.dirname(path.resolve(path.dirname(packageJsonPath), pkg.main));
+function getSourceFiles (base, ignore) {
+	return new Promise((resolve, reject) => {
+		glob('**/package.json', {cwd: base}).then(files  => {
 
-			return {
-				package: pkg,
-				path: path.relative(base, dirPath),
-				files: fs.readdirSync(dirPath)
-					.map(p => path.join(dirPath, p))
-					.filter(isScript)
-			};
+			const entries = files
+				.filter(name => !ignore.find(i => name.includes(i)))
+				.map(relativePackageJsonPath => {
+					const packageJsonPath = path.join(base, relativePackageJsonPath);
+					const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+					const dirPath = path.dirname(path.resolve(path.dirname(packageJsonPath), pkg.main));
+
+					return {
+						package: pkg,
+						path: path.relative(base, dirPath),
+						files: fs.readdirSync(dirPath)
+							.map(p => path.join(dirPath, p))
+							.filter(isScript)
+					};
+				});
+
+			resolve(entries);
+		}).catch(error => {
+			reject(error)
 		});
-
-	return entries;
+	});
 }
 
 function isRequired (name) {
 	throw new Error(`${name} is a required argument`);
 }
 
-export default async function main ({
+export default function main ({
 	output = isRequired('output'),
 	ignore = ['node_modules', 'build', 'dist', 'coverage'],
 	package: base = isRequired('package'),
@@ -76,17 +82,20 @@ export default async function main ({
 }) {
 	log.setLevel(logLevel);
 
-	const files = await getSourceFiles(path.resolve(base), ignore);
-	await Promise.all(files.map(moduleEntry => parse({
-		...moduleEntry,
-		format,
-		importMap,
-		output: (moduleName, result) => {
-			const file = path.basename(moduleEntry.package.main.replace(sourceExtension, '.d.ts'));
-			output(
-				path.join(path.resolve(outputPath || base), moduleEntry.path, file),
-				result
-			);
-		}
-	})));
+	getSourceFiles(path.resolve(base), ignore).then(files => {
+		files.forEach(moduleEntry => {
+			parse({
+				...moduleEntry,
+				format,
+				importMap,
+				output: (moduleName, result) => {
+					const file = path.basename(moduleEntry.package.main.replace(sourceExtension, '.d.ts'));
+					output(
+						path.join(path.resolve(outputPath || base), moduleEntry.path, file),
+						result
+					);
+				}
+			});
+		});
+	});
 }
