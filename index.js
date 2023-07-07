@@ -62,7 +62,7 @@ function getSourceFiles (base, ignore) {
 
 			resolve(entries);
 		}).catch(error => {
-			reject(error)
+			reject(error);
 		});
 	});
 }
