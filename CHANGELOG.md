@@ -1,5 +1,11 @@
 # Change Log
 
+## [unreleased]
+
+### Fixed
+
+* If a module is marked as private `.ts` file will not be generated.
+
 ## [1.0.0] (July 5, 2023)
 
 * Migrated project to ESM.
