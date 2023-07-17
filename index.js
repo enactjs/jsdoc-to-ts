@@ -28,7 +28,7 @@ async function parse ({path: modulePath, files, format, importMap, output}) {
 			const firstNamedEntry = root.find(entry => entry.name);
 			let moduleName = firstNamedEntry ? firstNamedEntry.name : '';
 
-			if (!result.length) {
+			if (!result.replace(/\s/g, '').length) {
 				return;
 			}
 
