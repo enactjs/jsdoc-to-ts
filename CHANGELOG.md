@@ -2,9 +2,8 @@
 
 ## [unreleased]
 
-### Fixed
-
-* If a module is marked as private `.ts` file will not be generated.
+* Fixed generation of empty `.ts` file for the private module.
+* Updated `glob` to the latest major version `^10.3.1` and refactored code to use promises instead of callbacks. 
 
 ## [1.0.0] (July 5, 2023)
 

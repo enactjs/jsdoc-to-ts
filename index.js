@@ -1,5 +1,5 @@
 import fs from 'fs';
-import glob from 'glob';
+import {glob} from 'glob';
 import path from 'path';
 import {build} from 'documentation';
 import log from 'loglevel';
@@ -46,11 +46,7 @@ async function parse ({path: modulePath, files, format, importMap, output}) {
 
 function getSourceFiles (base, ignore) {
 	return new Promise((resolve, reject) => {
-		glob('**/package.json', {cwd: base}, (er, files) => {
-			if (er) {
-				reject(er);
-				return;
-			}
+		glob('**/package.json', {cwd: base}).then(files  => {
 
 			const entries = files
 				.filter(name => !ignore.find(i => name.includes(i)))
@@ -69,6 +65,8 @@ function getSourceFiles (base, ignore) {
 				});
 
 			resolve(entries);
+		}).catch(error => {
+			reject(error);
 		});
 	});
 }
