@@ -1,6 +1,6 @@
 # Change Log
 
-## [unreleased]
+## [1.0.1] (July 25, 2023)
 
 * Fixed to prevent empty `.ts` file generation for private modules.
 * Updated `glob` to the latest major version `^10.3.1` and refactored code to use promises instead of callbacks. 
