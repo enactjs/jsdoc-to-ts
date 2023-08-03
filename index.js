@@ -33,7 +33,7 @@ async function parse ({path: modulePath, files, format, importMap, output}) {
 			}
 
 			if (format) {
-				result = prettier.format(result, {parser: 'typescript'});
+				result = await prettier.format(result, {parser: 'typescript'});
 			}
 
 			output(moduleName, result);
