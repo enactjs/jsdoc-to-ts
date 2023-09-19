@@ -32,14 +32,14 @@
   },
   "dependencies": {
     "documentation": "^14.0.2",
-    "glob": "^10.3.3",
+    "glob": "^10.3.4",
     "jsonata": "^2.0.3",
     "loglevel": "^1.8.1",
     "minimist": "^1.2.8",
-    "prettier": "^3.0.1"
+    "prettier": "^3.0.3"
   },
   "devDependencies": {
-    "chai": "^4.3.7",
+    "chai": "^4.3.8",
     "eslint-config-enact-proxy": "^1.0.6",
     "mocha": "^10.2.0",
     "react": "^18.2.0"
