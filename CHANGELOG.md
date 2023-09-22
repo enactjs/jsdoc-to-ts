@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.2] (September 22, 2023)
+
+* Updated `prettier` version to `^3.0.1`.
+
 ## [1.0.1] (July 25, 2023)
 
 * Fixed to prevent empty `.ts` file generation for private modules.
