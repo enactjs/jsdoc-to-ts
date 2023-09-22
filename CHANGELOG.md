@@ -1,6 +1,6 @@
 # Change Log
 
-## unreleased
+## [1.0.2] (September 22, 2023)
 
 * Updated `prettier` version to `^3.0.1`.
 
