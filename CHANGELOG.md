@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.3] (December 20, 2023)
+
+* Fixed security vulnerabilities.
+
 ## [1.0.2] (September 22, 2023)
 
 * Updated `prettier` version to `^3.0.1`.
