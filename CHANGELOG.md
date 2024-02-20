@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.4] (Febuary 20, 2024)
+
+* Updated `chai` version to `^5.0.3`.
+
 ## [1.0.3] (December 20, 2023)
 
 * Fixed security vulnerabilities.
