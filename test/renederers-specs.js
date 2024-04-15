@@ -1,6 +1,3 @@
-// eslint-disable-next-line no-shadow
-import {expect} from 'expect';
-
 import {getDefaultRenderers, defaultModuleRenderer, defaultHocRenderer, defaultFunctionRenderer} from '../src/renderers.js';
 
 import {
