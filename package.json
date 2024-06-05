@@ -40,6 +40,6 @@
   },
   "devDependencies": {
     "eslint-config-enact-proxy": "^1.0.7",
-    "react": "^18.2.0"
+    "react": "^19.0.0-rc-38e3b23483-20240529"
   }
 }
