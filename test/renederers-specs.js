@@ -1,6 +1,3 @@
-// eslint-disable-next-line no-shadow
-import {expect} from 'chai';
-
 import {getDefaultRenderers, defaultModuleRenderer, defaultHocRenderer, defaultFunctionRenderer} from '../src/renderers.js';
 
 import {
@@ -19,7 +16,7 @@ describe('renderers', function () {
 		it('should return an object', function () {
 			const expected = 'object';
 			const actual = typeof getDefaultRenderers();
-			expect(actual).equal(expected);
+			expect(actual).toBe(expected);
 		});
 
 		it('should allow customizing the object', function () {
@@ -28,7 +25,7 @@ describe('renderers', function () {
 
 			const expected = overrideFunc;
 			const actual = view.module;
-			expect(actual).equal(expected);
+			expect(actual).toBe(expected);
 		});
 	});
 
@@ -38,7 +35,7 @@ describe('renderers', function () {
 
 			const expected = emptyModuleOutput;
 			const view = await defaultModuleRenderer({section: emptyModule, parent: emptyModule, root: emptyModule, log, renderer});
-			expect(view).equal(expected);
+			expect(view).toBe(expected);
 		});
 	});
 
@@ -46,7 +43,7 @@ describe('renderers', function () {
 		it('should a complete hoc', async function () {
 			const expected = completeHocOutput;
 			const view = await defaultHocRenderer({section: completeHoc, parent: completeHoc, root: completeHoc, log});
-			expect(view).equal(expected);
+			expect(view).toBe(expected);
 		});
 	});
 
@@ -54,7 +51,7 @@ describe('renderers', function () {
 		it('should render a simple function definition', function () {
 			const expected = simpleFunctionOutput;
 			const view = defaultFunctionRenderer({section: simpleFunction, parent: simpleFunction, root: simpleFunction, log});
-			expect(view).equal(expected);
+			expect(view).toBe(expected);
 		});
 	});
 });
