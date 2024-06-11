@@ -1,6 +1,6 @@
 # Change Log
 
-## [unreleased]
+## [1.0.5] (June 11, 2024)
 
 * Removed `chai` and `mocha` dependencies
 
