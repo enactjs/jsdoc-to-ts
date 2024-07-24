@@ -1,6 +1,6 @@
 {
   "name": "@enact/jsdoc-to-ts",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Converts inline jsdoc comments to TypeScript .d.ts files",
   "main": "index.js",
   "author": "Roy Sutton <roy.sutton@lge.com>",
@@ -39,7 +39,7 @@
     "prettier": "^3.3.2"
   },
   "devDependencies": {
-    "eslint-config-enact-proxy": "^1.0.7",
+    "eslint-config-enact-proxy": "^1.0.8",
     "react": "^18.3.1"
   }
 }

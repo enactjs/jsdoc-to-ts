@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.6] (July 24, 2024)
+
+* Fixed security vulnerabilities.
+
 ## [1.0.5] (June 11, 2024)
 
 * Removed `chai` and `mocha` dependencies
