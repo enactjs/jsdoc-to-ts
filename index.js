@@ -7,6 +7,7 @@ import prettier from 'prettier';
 
 import {makeParser} from './src/parsers.js';
 
+
 const sourceExtension = /\.jsx?$/i;
 
 function isScript (filePath) {
