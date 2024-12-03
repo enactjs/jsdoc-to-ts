@@ -8,7 +8,7 @@
 
 * Removed `chai` and `mocha` dependencies
 
-## [1.0.4] (Febuary 20, 2024)
+## [1.0.4] (February 20, 2024)
 
 * Updated `chai` version to `^5.0.3`.
 
