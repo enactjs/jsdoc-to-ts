@@ -11,9 +11,9 @@ import {getDefaultRenderers} from './renderers.js';
  * Makes a parser that iterates over an array of supplied objects.
  *
  * @param {Object} config Configuration object
- * @param {Function} param.typeFilter A filter function
- * @param {Function} param.typeClassifier A type classification function
- * @param {Object} param.typeRenderers An object whose keys are classified types and whose
+ * @param {Function} config.typeFilter A filter function
+ * @param {Function} config.typeClassifier A type classification function
+ * @param {Object} config.typeRenderers An object whose keys are classified types and whose
  *	values are functions for processing those types
  */
 export async function makeParser (
