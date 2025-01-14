@@ -1,5 +1,9 @@
 # Change Log
 
+## [unreleased]
+
+* Updated `react` dependency to `^19.0.0`.
+
 ## [1.0.6] (July 24, 2024)
 
 * Fixed security vulnerabilities.
