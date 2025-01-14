@@ -38,6 +38,9 @@
     "minimist": "^1.2.8",
     "prettier": "^3.4.2"
   },
+  "overrides": {
+    "vue-template-compiler": "@vue/compiler-sfc@3.4.31"
+  },
   "devDependencies": {
     "eslint-config-enact-proxy": "^1.0.8",
     "react": "^19.0.0"
