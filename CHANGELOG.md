@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.7] (January 15, 2025)
+
+* Updated `react` dependency to `^19.0.0`.
+
 ## [1.0.6] (July 24, 2024)
 
 * Fixed security vulnerabilities.
@@ -8,7 +12,7 @@
 
 * Removed `chai` and `mocha` dependencies
 
-## [1.0.4] (Febuary 20, 2024)
+## [1.0.4] (February 20, 2024)
 
 * Updated `chai` version to `^5.0.3`.
 

@@ -12,7 +12,7 @@ npm install --save-dev @enact/jsdoc-to-ts
 
 ## Usage
 
-Assuming this directory is a peer of the Enact source and you want to write this into an installed (from npm) version of enact:
+Assuming this directory is a peer of the Enact source, and you want to write this into an installed (from npm) version of enact:
 
 ```bash
 node -e "import('./index.js').then(({default: jsdocToTs}) => {
@@ -50,7 +50,7 @@ node -e "import('(path of jsdoc-to-ts)/index.js').then(({default: jsdocToTs}) =>
 
 ## Working with Linked Enact
 
-The following command will parse the Enact source into a local `types` directory so you can use TypeScript with linked Enact:
+The following command will parse the Enact source into a local `types` directory, so you can use TypeScript with linked Enact:
 
 ```bash
 node -e "import('./index.js').then(({default: jsdocToTs}) => {
