@@ -1,6 +1,6 @@
 # Change Log
 
-## [unreleased]
+## [1.0.7] (January 15, 2025)
 
 * Updated `react` dependency to `^19.0.0`.
 
