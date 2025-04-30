@@ -24,12 +24,6 @@
     "jsdoc",
     "typescript"
   ],
-  "eslintConfig": {
-    "extends": "enact-proxy/strict",
-    "env": {
-      "node": true
-    }
-  },
   "dependencies": {
     "documentation": "^14.0.3",
     "glob": "^10.4.5",
@@ -42,7 +36,6 @@
     "vue-template-compiler": "@vue/compiler-sfc@3.4.31"
   },
   "devDependencies": {
-    "eslint-config-enact-proxy": "^1.0.8",
     "react": "^19.0.0"
   }
 }
