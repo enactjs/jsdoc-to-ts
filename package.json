@@ -17,7 +17,7 @@
     "access": "public"
   },
   "scripts": {
-    "lint": "enact lint --strict . -- --env=node",
+    "lint": "enact lint --strict .",
     "test": "enact test"
   },
   "keywords": [
