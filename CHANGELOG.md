@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.8] (May 15, 2025)
+
+* Removed eslint-related configs in `package.json`.
+
 ## [1.0.7] (January 15, 2025)
 
 * Updated `react` dependency to `^19.0.0`.
