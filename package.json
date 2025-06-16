@@ -30,12 +30,12 @@
     "jsonata": "^2.0.6",
     "loglevel": "^1.9.2",
     "minimist": "^1.2.8",
-    "prettier": "^3.4.2"
+    "prettier": "^3.5.3"
   },
   "overrides": {
     "vue-template-compiler": "@vue/compiler-sfc@3.4.31"
   },
   "devDependencies": {
-    "react": "^19.0.0"
+    "react": "^19.1.0"
   }
 }
