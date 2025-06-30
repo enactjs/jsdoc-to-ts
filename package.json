@@ -7,7 +7,7 @@
   "repository": "https://github.com/enactjs/jsdoc-to-ts",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=16"
+    "node": ">=16 || ^20.0.0"
   },
   "type": "module",
   "bin": {
