@@ -3,7 +3,7 @@
 ## [unreleased]
 
 * Updated `glob` version to `^11.0.3`.
-* Updated the minimum version of Node to `>=16 || ^20.0.0`
+* Updated the minimum version of Node to `^20.10.10 || >=22`
 
 ## [1.0.8] (May 15, 2025)
 
