@@ -1,6 +1,6 @@
 # Change Log
 
-## [unreleased]
+## [1.0.9] (July 18, 2025)
 
 * Updated `glob` version to `^11.0.3`.
 * Updated the minimum version of Node to `^20.10.10 || >=22`
