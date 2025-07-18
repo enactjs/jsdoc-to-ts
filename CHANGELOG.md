@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.0.9] (July 18, 2025)
+
+* Updated `glob` version to `^11.0.3`.
+* Updated the minimum version of Node to `^20.10.10 || >=22`
+
 ## [1.0.8] (May 15, 2025)
 
 * Removed eslint-related configs in `package.json`.
