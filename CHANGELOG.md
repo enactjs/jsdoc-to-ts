@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.10] (November 13, 2025)
+
+* Fixed security vulnerabilities.
+
 ## [1.0.9] (July 18, 2025)
 
 * Updated `glob` version to `^11.0.3`.
