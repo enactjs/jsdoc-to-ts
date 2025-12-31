@@ -26,13 +26,13 @@
   ],
   "dependencies": {
     "documentation": "^14.0.3",
-    "glob": "^11.0.3",
+    "glob": "^13.0.0",
     "jsonata": "^2.1.0",
     "loglevel": "^1.9.2",
     "minimist": "^1.2.8",
-    "prettier": "^3.6.2"
+    "prettier": "^3.7.4"
   },
   "devDependencies": {
-    "react": "^19.1.1"
+    "react": "^19.2.3"
   }
 }
