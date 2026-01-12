@@ -32,6 +32,9 @@
     "minimist": "^1.2.8",
     "prettier": "^3.7.4"
   },
+  "overrides": {
+    "vue-template-compiler": "@vue/compiler-sfc@3.4.31"
+  },
   "devDependencies": {
     "react": "^19.2.3"
   }
