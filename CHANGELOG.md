@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.11] (January 13, 2026)
+
+* Fixed security vulnerabilities.
+
 ## [1.0.10] (November 13, 2025)
 
 * Fixed security vulnerabilities.
