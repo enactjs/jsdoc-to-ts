@@ -1,6 +1,6 @@
 # Change Log
 
-## [unreleased]
+## [1.0.12] (April 7, 2026)
 
 * Fixed security vulnerabilities.
 
