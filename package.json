@@ -1,6 +1,6 @@
 {
   "name": "@enact/jsdoc-to-ts",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Converts inline jsdoc comments to TypeScript .d.ts files",
   "main": "index.js",
   "author": "Roy Sutton <roy.sutton@lge.com>",
@@ -26,16 +26,16 @@
   ],
   "dependencies": {
     "documentation": "^14.0.3",
-    "glob": "^13.0.0",
+    "glob": "^13.0.6",
     "jsonata": "^2.1.0",
     "loglevel": "^1.9.2",
     "minimist": "^1.2.8",
-    "prettier": "^3.7.4"
+    "prettier": "^3.8.1"
   },
   "overrides": {
     "vue-template-compiler": "@vue/compiler-sfc@3.4.31"
   },
   "devDependencies": {
-    "react": "^19.2.3"
+    "react": "^19.2.4"
   }
 }
