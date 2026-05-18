@@ -43,6 +43,10 @@ jobs:
           npm install
           popd
 
+      - name: Install project dependencies
+        run: |
+          npm install
+
       - name: Run tests with coverage
         run: npm test -- --runInBand --coverage
 
