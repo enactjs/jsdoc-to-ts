@@ -4,6 +4,27 @@
 
 * Updated jsdoc-to-ts CLI option to support Limestone.
 
+## [1.0.12] (April 7, 2026)
+
+* Fixed security vulnerabilities.
+
+## [1.0.11] (January 13, 2026)
+
+* Fixed security vulnerabilities.
+
+## [1.0.10] (November 13, 2025)
+
+* Fixed security vulnerabilities.
+
+## [1.0.9] (July 18, 2025)
+
+* Updated `glob` version to `^11.0.3`.
+* Updated the minimum version of Node to `^20.10.10 || >=22`
+
+## [1.0.8] (May 15, 2025)
+
+* Removed eslint-related configs in `package.json`.
+
 ## [1.0.7] (January 15, 2025)
 
 * Updated `react` dependency to `^19.0.0`.
