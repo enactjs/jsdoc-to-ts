@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.0.13] (June 23, 2026)
+
+* Updated jsdoc-to-ts CLI option to support Limestone.
+
 ## [1.0.12] (April 7, 2026)
 
 * Fixed security vulnerabilities.

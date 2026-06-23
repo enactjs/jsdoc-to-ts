@@ -1,0 +1,60 @@
+name: CI Pipeline
+
+on:
+  workflow_call:
+    inputs:
+      checkout-ref:
+        description: 'Git ref to checkout (empty for default merge commit)'
+        type: string
+        required: false
+        default: ''
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: ['lts/*', 'node']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.checkout-ref || github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Clone and setup Enact CLI
+        run: |
+          git clone --branch=develop --depth 1 https://github.com/enactjs/cli ../cli
+          pushd ../cli
+          npm install
+          npm link
+          popd
+
+      - name: Clone and setup Enact Limestone
+        run: |
+          git clone --branch=develop --depth 1 https://github.com/enactjs/limestone ../limestone
+          pushd ../limestone
+          npm install
+          popd
+
+      - name: Install project dependencies
+        run: |
+          npm install
+
+      - name: Run tests with coverage
+        run: npm test -- --runInBand --coverage
+
+      - name: Run ESLint
+        run: npm run lint -- --report-unused-disable-directives --max-warnings 0 .
+
+      - name: Help option
+        run: node bin/jsdoc-to-ts -h
+
+      - name: JSDoc converting
+        run: node bin/jsdoc-to-ts ../limestone -o=../limestone
