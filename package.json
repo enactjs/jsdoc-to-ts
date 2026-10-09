@@ -27,17 +27,19 @@
   "dependencies": {
     "documentation": "^14.0.3",
     "glob": "^13.0.6",
-    "jsonata": "^2.2.1",
+    "jsonata": "^2.2.2",
     "loglevel": "^1.9.2",
     "minimist": "^1.2.8",
-    "prettier": "^3.8.3"
+    "prettier": "^3.9.9"
   },
   "overrides": {
-    "lodash": "^4.18.1",
-    "picomatch": "^2.3.2",
-    "postcss": "^8.5.15"
+    "brace-expansion@2": "^2.1.7",
+    "brace-expansion@5": "^5.0.12",
+    "browserslist": "^4.28.7",
+    "js-yaml@4": "^4.3.2",
+    "postcss": "^8.5.29"
   },
   "devDependencies": {
-    "react": "^19.2.7"
+    "react": "^19.3.0"
   }
 }
